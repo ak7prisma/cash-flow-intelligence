@@ -1,7 +1,7 @@
-export default function Profile(){
+export default function ProfileLayout(){
     return(
         <main>
             
         </main>
     );
-}
+} 
