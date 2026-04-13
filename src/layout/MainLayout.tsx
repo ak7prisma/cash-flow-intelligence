@@ -4,9 +4,9 @@ import Navbar from "../component/organism/Navbar";
 
 export default function MainLayout(){
     return(
-        <div>
+        <div className="h-screen w-screen flex flex-col justify-between">
             <MainHeader />
-            <main>
+            <main className="mx-24">
                 <Outlet />
             </main>
             <Navbar />
