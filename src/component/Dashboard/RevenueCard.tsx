@@ -1,6 +1,6 @@
 export default function RevenueCard() {
   return (
-    <div className="relative overflow-hidden rounded-4xl w-auto text-slate-400 bg-blue-950 dark:bg-slate-900/20 p-5 py-8 flex flex-col gap-4 place-items-center shadow-xl">
+    <div className="relative overflow-hidden rounded-3xl w-auto text-slate-400 bg-blue-950 dark:bg-slate-900/20 p-5 py-8 flex flex-col gap-4 place-items-center shadow-xl">
       
       <div className="absolute -top-10 -right-10 size-32 bg-cyan-400/20 blur-3xl rounded-full pointer-events-none" />
       <div className="absolute top-0 right-0 size-20 bg-cyan-300/10 blur-2xl rounded-full pointer-events-none" />
