@@ -16,11 +16,11 @@ export default function MainHeader() {
     }, [isDark]);
 
     return (
-        <header className="flex items-center justify-between p-5 pt-10 text-blue-950 dark:text-slate-100 bg-slate-50/70 dark:bg-base-dark/70 backdrop-blur-md sticky top-0 z-50 transition-colors">
+        <header className="flex items-center justify-between p-5 pt-10 text-blue-950 dark:text-slate-100 bg-slate-50/10 dark:bg-base-dark/10 backdrop-blur-md sticky top-0 z-50 transition-colors">
             
             <div className="flex items-center gap-2">
                 <img src="LogoCFI.png" alt="Logo CFI" className="size-10" />
-                <h1 className="font-semibold text-xl dark:text-[#00F5FF]">Cash Flow Intelligence</h1>
+                <h1 className="font-semibold text-xl dark:text-cyan-400">Cash Flow Intelligence</h1>
             </div>
             
             <button 
