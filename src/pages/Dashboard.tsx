@@ -7,7 +7,7 @@ import WeeklyChart from "../component/Dashboard/WeeklyCharts";
 
 export default function Dashboard() {
     return (
-        <div>
+        <div className="flex flex-col gap-4">
             <Title />
             <RevenueCard />
             <InsightCard />
