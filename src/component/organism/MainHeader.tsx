@@ -2,8 +2,8 @@ import { TbSunHighFilled } from "react-icons/tb";
 
 export default function MainHeader(){
     return(
-        <header className="flex items-center justify-between p-5 pt-10 bg-slate-50/70">
-            <div className="flex items-center">
+        <header className="flex items-center justify-between p-5 pt-10 text-blue-950 bg-slate-50/70">
+            <div className="flex items-center gap-2">
                 <img src="LogoCFI.png" alt="Logo CFI" className="size-10"/>
                 <h1 className="font-semibold text-xl">Cash Flow Intelligence</h1>
             </div>
