@@ -1,7 +1,19 @@
+import InsightCard from "../component/Dashboard/InsightCard";
+import MonthlyChart from "../component/Dashboard/MonthlyChart";
+import RecentMove from "../component/Dashboard/RecentMove";
+import RevenueCard from "../component/Dashboard/RevenueCard";
+import Title from "../component/Dashboard/Title";
+import WeeklyChart from "../component/Dashboard/WeeklyCharts";
+
 export default function Dashboard() {
     return (
-        <main>
-
-        </main>
+        <div>
+            <Title />
+            <RevenueCard />
+            <InsightCard />
+            <WeeklyChart />
+            <MonthlyChart />
+            <RecentMove />
+        </div>
     );
 }
