@@ -12,27 +12,11 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { MdOutlineShowChart } from 'react-icons/md';
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { DAYS, CHART_DATA, TARGET_INDEX } from '../../data/dummytester';
+import { useDarkMode } from '../../hooks/useDarkMode';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Filler);
-
-function useDarkMode() {
-  const [isDark, setIsDark] = useState(
-    typeof document === 'undefined' ? false : document.documentElement.classList.contains('dark')
-  );
-
-  useEffect(() => {
-    if (typeof document === 'undefined') return;
-    const observer = new MutationObserver(() => {
-      setIsDark(document.documentElement.classList.contains('dark'));
-    });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    return () => observer.disconnect();
-  }, []);
-
-  return isDark;
-}
 
 export default function WeeklyChart() {
   const isDark = useDarkMode();

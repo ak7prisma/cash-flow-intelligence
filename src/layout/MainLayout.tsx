@@ -11,7 +11,7 @@ export default function MainLayout() {
       
       <div className="fixed top-1/2 -right-20 size-96 rounded-full blur-[120px] opacity-15 pointer-events-none z-0 
         bg-teal-800 dark:bg-cyan-400" />
-      <div className="relative z-10 flex flex-col min-h-screen mt-20">
+      <div className="relative z-10 flex flex-col min-h-screen mt-23 mb-20">
         <MainHeader />
         
         <main className="mx-5 my-5 flex-1 no-scrollbar">
