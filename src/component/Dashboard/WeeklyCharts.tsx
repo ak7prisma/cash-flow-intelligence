@@ -96,9 +96,9 @@ export default function WeeklyChart() {
   }), [isDark]);
 
   return (
-    <div className="bg-slate-50 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800 rounded-2xl p-5 shadow-sm transition-colors duration-300">
+    <div className="bg-slate-50/40 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800 rounded-2xl p-5 shadow-sm transition-colors duration-300">
       <div className="flex justify-between items-center mb-2">
-        <h2 className="text-blue-950 dark:text-slate-100 font-bold tracking-wide text-sm">
+        <h2 className="text-blue-950 dark:text-slate-100 font-bold tracking-wide text-base">
           WEEKLY SPENDING TREND
         </h2>
         <MdOutlineShowChart className="text-slate-400 text-xl font-semibold" />

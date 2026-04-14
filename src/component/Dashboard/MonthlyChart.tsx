@@ -40,10 +40,10 @@ export default function MonthlyRatioCard() {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
+    <div className="bg-slate-50/40 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
       
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-[#003366] dark:text-slate-100 font-bold tracking-wide text-sm">
+        <h2 className="text-[#003366] dark:text-slate-100 font-bold tracking-wide text-base">
           MONTHLY: INCOME vs EXPENSE
         </h2>
         <TbChartPie className="text-slate-500 text-2xl" />

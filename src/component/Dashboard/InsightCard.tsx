@@ -8,7 +8,7 @@ export default function InsightCard() {
         GEMINI INTELLIGENCE
       </div>
 
-      <div className="bg-white dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 pt-8 shadow-sm">
+      <div className="bg-slate-50/40 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 pt-8 shadow-sm">
         <p className="text-lg leading-relaxed font-medium text-slate-800 dark:text-slate-200">
           Spending analysis:{" "}
           <span className="text-red-600 dark:text-red-400 font-semibold">
