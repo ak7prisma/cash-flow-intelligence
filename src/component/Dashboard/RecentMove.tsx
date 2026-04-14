@@ -8,7 +8,7 @@ export default function RecentMove() {
         <h2 className="text-blue-950 dark:text-slate-100 font-bold text-base">
           Recent Movements
         </h2>
-        <button className="text-teal-700 dark:text-[#00F5FF] text-sm font-bold uppercase tracking-wider">
+        <button className="text-teal-700 dark:text-cyan-400 text-sm font-bold uppercase tracking-wider">
           View All
         </button>
       </div>
@@ -21,7 +21,7 @@ export default function RecentMove() {
           >
             <div className="flex items-center gap-4">
               <div className={`p-3 rounded-xl ${item.iconBg}`}>
-                <item.icon className="text-teal-700 dark:text-[#00F5FF]" />
+                <item.icon className="text-teal-700 dark:text-cyan-400" />
               </div>
               <div className="flex flex-col">
                 <span className="font-bold text-blue-950 dark:text-slate-100 text-sm">
@@ -35,7 +35,7 @@ export default function RecentMove() {
 
             <div className={`font-bold text-sm ${
               item.type === "income" 
-                ? "text-teal-700 dark:text-[#00F5FF]" 
+                ? "text-teal-700 dark:text-cyan-400" 
                 : "text-blue-950 dark:text-red-400"
             }`}>
               {item.amount}

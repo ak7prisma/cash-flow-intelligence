@@ -15,7 +15,7 @@ export default function InsightCard() {
             fast food costs are up 20%
           </span>{" "}
           this week. Set a Rp 100k daily budget to save{" "}
-          <span className="text-teal-700 dark:text-[#00F5FF] font-bold">
+          <span className="text-teal-700 dark:text-cyan-400 font-bold">
             Rp 150k potential!
           </span>
         </p>
