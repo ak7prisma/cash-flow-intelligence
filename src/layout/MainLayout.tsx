@@ -1,8 +1,11 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import MainHeader from "../component/organism/MainHeader";
 import Navbar from "../component/organism/Navbar";
 
 export default function MainLayout() {
+
+  const location = useLocation();
+    
   return (
     <div className="relative min-h-screen w-screen flex flex-col justify-between overflow-x-hidden bg-slate-50 dark:bg-base-dark transition-colors duration-300">
       
@@ -11,7 +14,7 @@ export default function MainLayout() {
       
       <div className="fixed top-1/2 -right-20 size-96 rounded-full blur-[120px] opacity-15 pointer-events-none z-0 
         bg-teal-800 dark:bg-cyan-400" />
-      <div className="relative z-10 flex flex-col min-h-screen mt-23 mb-20">
+      <div className={`relative z-10 flex flex-col min-h-screen mt-23 ${location.pathname === '/'|| location.pathname === '/history' ? 'mb-40' : 'mb-20' }`}>
         <MainHeader />
         
         <main className="mx-5 my-5 flex-1 no-scrollbar">

@@ -13,7 +13,7 @@ export default function Navbar() {
       {showAssistantButton && (
         <Link
           to="/assistant"
-          className="fixed bottom-24 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-xl bg-teal-800 dark:bg-cyan-400 shadow-teal-500 dark:shadow-cyan-200 transition-transform duration-200 active:scale-95"
+          className="fixed bottom-26 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-xl bg-teal-800 dark:bg-cyan-400 shadow-teal-500 dark:shadow-cyan-200 transition-transform duration-200 active:scale-95"
         >
           <TbPlus className="text-xl text-slate-50 dark:text-blue-950 stroke-3" />
         </Link>
