@@ -1,7 +1,7 @@
 export default function AuthLayout(){
     return(
-        <main>
+        <div>
             
-        </main>
+        </div>
     );
 }
