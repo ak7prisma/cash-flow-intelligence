@@ -6,8 +6,7 @@ import { settingData, supportData } from '../data/profile';
 export default function Profile() {
 
   return (
-    <div className="min-h-screen  flex flex-col gap-6">
-
+    <div className="w-full flex flex-col gap-6">
       <ProfileFoto />
       <SettingList sectionTitle="SETTING" items={settingData as any} />
       <SettingList sectionTitle="SUPPORT" items={supportData as any} />
