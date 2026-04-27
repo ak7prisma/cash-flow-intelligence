@@ -17,7 +17,7 @@ export default function MainLayout() {
       <div className={`relative z-10 flex flex-col min-h-screen mt-23 ${showAssistantButton? 'mb-40' : 'mb-20' }`}>
         <MainHeader />
         
-        <main className="mx-5 my-5 flex-1 no-scrollbar">
+        <main className="mx-5 my-5 min-h-screen flex flex-col justify-center items-center">
           <Outlet />
         </main>
         
