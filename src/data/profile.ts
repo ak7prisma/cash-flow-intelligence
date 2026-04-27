@@ -5,6 +5,7 @@ export const settingData = [
     {
       id: 1,
       toggle: false,
+      to: "/profile/securityset",
       icon: PiShieldCheckeredFill ,
       title: "Security Settings",
       subtitle: "Manage your password.",
@@ -12,6 +13,7 @@ export const settingData = [
     {
       id: 2,
       toggle: false,
+      to: "/profile/dailyremind",
       icon: TbBellRinging ,
       title: "Daily Reminder",
       subtitle: "Set to 08:00.",
@@ -19,6 +21,7 @@ export const settingData = [
     {
       id: 3,
       toggle: true,
+      to: "",
       icon: TbSun ,
       title: "Appearance",
       subtitle: "Turn on dark mode",
@@ -29,6 +32,7 @@ export  const supportData = [
     {
       id: 1,
       toggle: false,
+      to: "/profile/aboutapp",
       icon: TbInfoCircle ,
       title: "About App",
       subtitle: "App info and version.",
@@ -36,6 +40,7 @@ export  const supportData = [
     {
       id: 2,
       toggle: false,
+      to: "/profile/helpsupp",
       icon: TbHelp ,
       title: "Help & Support",
       subtitle: "FAQ and contact us.",

@@ -38,11 +38,11 @@ function App() {
         
         <Route element={<ProfileLayout/>}>
           <Route path="/profile" element={<Profile />} />
-          <Route path="/securityset" element={<SecuritySet />} />
-          <Route path="/aboutapp" element={<AboutApp />} />
-          <Route path="/dailyremind" element={<DailyRemind />} />
-          <Route path="/helpsupp" element={<HelpSupp />} />
-          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/profile/securityset" element={<SecuritySet />} />
+          <Route path="/profile/aboutapp" element={<AboutApp />} />
+          <Route path="/profile/dailyremind" element={<DailyRemind />} />
+          <Route path="/profile/helpsupp" element={<HelpSupp />} />
+          <Route path="/profile/privacy" element={<Privacy />} />
         </Route>
       </Routes>
 
