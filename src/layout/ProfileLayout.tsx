@@ -19,7 +19,7 @@ export default function ProfileLayout(){
             <BackgroundElement />
 
             <ProfileHeader text={headerText} />
-            <main className="mx-5 py-30 min-h-screen flex flex-col justify-center items-center">
+            <main className="mx-5 py-28 min-h-screen flex flex-col justify-center items-center">
                 <Outlet />
             </main>
             <Navbar />

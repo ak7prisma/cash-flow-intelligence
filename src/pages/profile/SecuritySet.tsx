@@ -44,6 +44,7 @@ export default function SecuritySettingContent () {
         <Button 
           text="Cancel and Return" 
           variant="ghost" 
+          to='/profile'
         />
       </div>
 

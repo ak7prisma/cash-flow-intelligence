@@ -1,18 +1,20 @@
+import { NavLink } from "react-router-dom";
+
 interface ButtonProps {
   text: string;
   variant?: "primary" | "secondary" | "ghost";
+  to?: string;
 }
 
-export default function Button({ text, variant = "primary" }: Readonly<ButtonProps>) {
+export default function Button({ text, variant = "primary", to }: Readonly<ButtonProps>) {
 
   if (variant === "ghost") {
     return (
-      <button 
-        type="button"
-        className="w-full text-center py-2 text-blue-950 dark:text-slate-50 font-bold text-sm tracking-widest uppercase"
+      <NavLink to={to || "#"}
+        className="flex justify-center w-full text-center py-2 text-blue-950 dark:text-slate-50 font-bold text-sm tracking-widest uppercase"
       >
         {text}
-      </button>
+      </NavLink>
     );
   }
 
