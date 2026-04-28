@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { BiArrowBack } from "react-icons/bi";
 import { NavLink, useLocation } from "react-router-dom";
 

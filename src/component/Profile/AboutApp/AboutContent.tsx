@@ -1,5 +1,5 @@
 import { techStackData, developerData } from "../../../data/aboutapp";
-import { StackIcon } from "../../ui/StackIcon";
+import { IconUI } from "../../ui/IconUI";
 import SettingCard from "../../ui/SettingCard";
 import { RiSparkling2Line } from "react-icons/ri";
 
@@ -33,7 +33,7 @@ export default function AboutContent() {
       <SettingCard title="Tech Stack">
         <div className="flex items-center justify-between px-1">
           {techStackData.map((item) => (
-            <StackIcon key={item.name} Icon={item.icon}/>
+            <IconUI key={item.name} Icon={item.icon}/>
           ))}
         </div>
       </SettingCard>
