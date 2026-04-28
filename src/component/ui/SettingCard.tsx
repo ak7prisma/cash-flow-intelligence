@@ -8,7 +8,7 @@ interface SettingCardProps {
 
 export default function SettingCard({ title, children, className = "" }: Readonly<SettingCardProps>) {
   return (
-    <section className={`mb-10 ${className}`}>
+    <section className={className}>
       <h3 className="text-xs font-bold text-slate-400 dark:text-slate-400 tracking-[0.2em] mb-4 uppercase">
         {title}
       </h3>
