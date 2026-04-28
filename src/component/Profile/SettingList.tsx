@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 import ThemeToggle from "../ui/ThemeToggle";
 import { TbChevronDown } from "react-icons/tb";
+import SettingCard from "../ui/SettingCard";
 
 interface SettingItem {
   id: string | number;
@@ -19,14 +20,8 @@ interface SettingListProps {
 export default function SettingList({ sectionTitle, items }: Readonly<SettingListProps>) {
 
   return (
-    <div className="">
-      {/* Judul Section */}
-      <h3 className="text-[11px] font-bold text-slate-500 dark:text-slate-400 tracking-[0.2em] uppercase mb-3 px-1">
-        {sectionTitle}
-      </h3>
-      
-      {/* Kotak List */}
-      <div className="bg-slate-50 dark:bg-slate-950/40 border border-slate-100 dark:border-slate-800 rounded-3xl p-5 shadow-sm flex flex-col gap-6">
+    <SettingCard title={sectionTitle} className="mb-0">
+      <div className="flex flex-col gap-6">
         {items.map((item) => (
           <NavLink to={item.to} key={item.id} className="flex items-center justify-between cursor-pointer group">
             {/* Icon + Teks */}
@@ -51,6 +46,6 @@ export default function SettingList({ sectionTitle, items }: Readonly<SettingLis
           </NavLink>
         ))}
       </div>
-    </div>
+    </SettingCard>
   );
 }
