@@ -19,7 +19,7 @@ export default function Navbar() {
         </Link>
       )}
 
-      <nav className="flex justify-between py-5 px-4 text-gray-700 dark:text-slate-400 bg-slate-50/60 dark:bg-slate-900/60 text-sm backdrop-blur-md fixed bottom-0 left-0 right-0 z-50">
+      <nav className="flex justify-between py-5 px-4 text-gray-700 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 text-sm backdrop-blur-md fixed bottom-0 left-0 right-0 z-50">
         {navlinks.map((link) => (
           <NavLink
             key={link.id}
