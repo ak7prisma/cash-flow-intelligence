@@ -11,7 +11,7 @@ export function getProfileHeaderText(lastSegment?: string): string {
         case "helpsupp":
             return "Help & Support";
         case "privacy":
-            return "Privacy";
+            return "Cash Flow Intelligence";
         case "securityset":
             return "Security Settings";
         default:
