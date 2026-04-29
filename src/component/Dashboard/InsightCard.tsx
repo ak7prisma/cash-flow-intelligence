@@ -1,10 +1,10 @@
-import { VscRobot } from "react-icons/vsc";
+import { RiRobot2Line } from "react-icons/ri";
 
 export default function InsightCard() {
   return (
     <div className="relative mt-4">
       <div className="absolute -top-3 left-6 flex items-center gap-1.5 bg-teal-800 dark:bg-slate-900/40 dark:border-2 dark:border-cyan-400 text-cyan-300 px-3 py-1 rounded-full text-[10px] font-medium tracking-wider z-10 shadow-sm">
-        <VscRobot className="text-base" />
+        <RiRobot2Line className="text-base" />
         GEMINI INTELLIGENCE
       </div>
 

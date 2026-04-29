@@ -1,6 +1,6 @@
 import { GrHistory } from "react-icons/gr";
 import { MdOutlineDashboard, MdOutlinePerson } from "react-icons/md";
-import { VscRobot } from "react-icons/vsc";
+import { RiRobot2Line } from "react-icons/ri";
 
 export const navlinks = [
     {
@@ -13,7 +13,7 @@ export const navlinks = [
         id:2,
         href:"/assistant",
         label:"Assistant",
-        icon:VscRobot,
+        icon:RiRobot2Line,
     },
     {
         id:1,
