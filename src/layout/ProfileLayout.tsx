@@ -15,7 +15,7 @@ export default function ProfileLayout(){
     const headerText = getProfileHeaderText(lastSegment);
 
     return(
-        <div className="relative min-h-screen w-screen flex flex-col justify-between overflow-x-hidden bg-slate-50 dark:bg-base-dark transition-colors duration-300">
+        <div className="relative min-h-screen w-screen flex flex-col justify-between overflow-x-hidden transition-colors duration-300">
             <BackgroundElement />
 
             <ProfileHeader text={headerText} />

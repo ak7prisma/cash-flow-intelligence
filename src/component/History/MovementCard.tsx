@@ -32,7 +32,7 @@ export default function MovementCard({ item }: Readonly<MovementCardProps>) {
             <button className="text-slate-400 transition-colors">
               <LuPencil size={14} />
             </button>
-            <button className="text-slate-400 hover:text-red-500 transition-colors">
+            <button className="text-slate-400 transition-colors">
               <LuTrash2 size={14} />
             </button>
           </div>
