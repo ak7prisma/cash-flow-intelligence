@@ -2,21 +2,14 @@ import { Link } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { LuSmartphone, LuSparkles } from "react-icons/lu";
 import Button from "../../component/ui/Button";
+import Logo from "../../component/ui/Logo";
 
 export default function Welcome() {
   return (
     <div className="flex flex-col justify-between gap-25 items-center text-center animate-in fade-in slide-in-from-bottom-8">
 
       {/* Logo */}
-      <div className="flex flex-col items-center">
-        <div className="p-5 rounded-full bg-blue-950 dark:bg-slate-950 flex items-center justify-center mb-2 shadow-lg">
-          <img src="/LogoCFI.png" alt="Logo CFI" className="w-15 h-15 object-contain brightness-150 dark:brightness-125" />
-        </div>
-        <h1 className="text-xl font-bold text-blue-950 dark:text-slate-100 tracking-widest leading-tight uppercase">
-          Cash Flow <br />
-          <span className="opacity-80 text-lg">Intelligence</span>
-        </h1>
-      </div>
+      <Logo className="mt-4" />
 
       {/* Hero */}
       <div className="relative w-full flex flex-col items-center justify-center">
@@ -52,7 +45,7 @@ export default function Welcome() {
             text="Login via Email"
             to="/auth/Login"
             icon={<LuSmartphone size={24} />}
-            className="bg-teal-800 dark:bg-cyan-400 text-white dark:text-[#071317] shadow-2xl shadow-cyan-500/20"
+            className="bg-teal-800 dark:bg-cyan-400 text-white dark:text-slate-950 shadow-2xl shadow-cyan-500/20"
           />
 
           <Button
@@ -67,11 +60,11 @@ export default function Welcome() {
         <div className="px-10">
           <p className="text-[9px] font-semibold text-slate-500 dark:text-slate-500 leading-relaxed tracking-widest">
             By continuing, you agree to the{" "}
-            <Link to="/profile/privacy" className="text-blue-950 dark:text-[#00F5FF] font-bold transition-colors">
+            <Link to="/profile/privacy" className="text-blue-950 dark:text-cyan-400 font-bold transition-colors">
               Terms of Service
             </Link>{" "}
             and{" "}
-            <Link to="/profile/privacy" className="text-blue-950 dark:text-[#00F5FF] font-bold transition-colors">
+            <Link to="/profile/privacy" className="text-blue-950 dark:text-cyan-400 font-bold transition-colors">
               Privacy Policy
             </Link>
             .
