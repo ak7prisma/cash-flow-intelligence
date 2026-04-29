@@ -4,7 +4,7 @@ import { IconUI } from "../../ui/IconUI";
 export default function ContactSection() {
     return (
         <section className="flex flex-col items-center">
-            <h3 className="text-md font-bold text-slate-500 tracking-widest uppercase">
+            <h3 className="text-md font-bold mb-2 text-slate-500 tracking-widest uppercase">
             Contact Support
             </h3>
             <div className="flex items-center justify-center gap-2 py-2 w-full bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-full shadow-sm">
