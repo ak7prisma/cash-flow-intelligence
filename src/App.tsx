@@ -15,6 +15,7 @@ import AboutApp from "./pages/profile/AboutApp";
 import DailyRemind from "./pages/profile/DailyRemind";
 import HelpSupp from "./pages/profile/HelpSupp";
 import Privacy from "./pages/profile/Privacy";
+import Welcome from "./pages/auth/Welcome";
 
 function App() {
 
@@ -30,6 +31,7 @@ function App() {
         </Route>
 
         <Route element={<AuthLayout/>}>
+          <Route path="/auth/Welcome" element={<Welcome />} />
           <Route path="/auth/Login" element={<Login />} />
           <Route path="/auth/Register" element={<Register />} />
           <Route path="/auth/ForgotPass" element={<ForgotPass />} />
