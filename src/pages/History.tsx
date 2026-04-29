@@ -1,7 +1,52 @@
-export default function History(){
-    return(
-        <main>
-            
-        </main>
-    );
+import { useState } from "react";
+import { movements } from "../data/dummytester";
+import MovementCard from "../component/History/MovementCard";
+
+export default function History() {
+  const [activeFilter, setActiveFilter] = useState("All");
+
+  const filters = ["All", "Income", "Expense"];
+
+  const filteredMovements = movements.filter((item) => {
+    if (activeFilter === "All") return true;
+    return item.type.toLowerCase() === activeFilter.toLowerCase();
+  });
+
+  return (
+    <div className="flex flex-col gap-6 w-full">
+      {/* Header Section */}
+      <div className="flex flex-col gap-1 px-1">
+        <h3 className="text-xs font-bold tracking-widest text-teal-800 dark:text-cyan-400 uppercase">
+          Financial Activity
+        </h3>
+        <h1 className="text-5xl font-bold text-blue-950 dark:text-slate-100 leading-tight">
+          Recent <br /> Movements
+        </h1>
+      </div>
+
+      {/* Filter Tabs */}
+      <div className="flex gap-2 px-1">
+        {filters.map((filter) => (
+          <button
+            key={filter}
+            onClick={() => setActiveFilter(filter)}
+            className={`px-6 py-2 rounded-xl text-sm font-semibold transition-all duration-300 ${
+              activeFilter === filter
+                ? "bg-blue-950 text-white dark:bg-cyan-400 dark:text-slate-950 shadow-lg shadow-cyan-400/20"
+                : "bg-slate-200/60 text-slate-500 dark:bg-slate-800/40 dark:text-slate-400"
+            }`}
+          >
+            {filter}
+          </button>
+        ))}
+      </div>
+
+      {/* Transactions List */}
+      <div className="flex flex-col gap-4">
+        {filteredMovements.map((item) => (
+          <MovementCard key={item.id} item={item}/>
+        ))}
+      </div>
+    </div>
+  );
 }

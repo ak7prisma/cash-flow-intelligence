@@ -1,20 +1,26 @@
- import { movements } from "../../data/dummytester";
+import { Link } from "react-router-dom";
+import { movements } from "../../data/dummytester";
 
 export default function RecentMove() {
+
+  const recentMovements = movements.slice(0, 2);
+
   return (
     <div className="flex flex-col gap-4">
-
       <div className="flex justify-between items-center px-1">
         <h2 className="text-blue-950 dark:text-slate-100 font-bold text-base">
           Recent Movements
         </h2>
-        <button className="text-teal-700 dark:text-cyan-400 text-sm font-bold uppercase tracking-wider">
+        <Link 
+          to="/history" 
+          className="text-teal-700 dark:text-cyan-400 text-sm font-bold uppercase tracking-wider"
+        >
           View All
-        </button>
+        </Link>
       </div>
 
       <div className="flex flex-col gap-3">
-        {movements.map((item) => (
+        {recentMovements.map((item) => (
           <div
             key={item.id}
             className="flex items-center justify-between bg-white dark:bg-slate-900/40 p-4 rounded-2xl border border-slate-50 dark:border-slate-800 shadow-sm"
