@@ -14,10 +14,10 @@ export default function MainLayout() {
     
       <BackgroundElement /> 
       
-      <div className={`relative z-10 flex flex-col min-h-screen mt-23 ${showAssistantButton? 'mb-40' : 'mb-20' }`}>
+      <div className={`relative z-10 flex flex-col mt-23 ${showAssistantButton? 'mb-40' : 'mb-20' }`}>
         <MainHeader />
         
-        <main className="mx-5 my-5 min-h-screen flex flex-col justify-center items-center">
+        <main className="mx-5 my-5 flex flex-col justify-start items-start">
           <Outlet />
         </main>
         
