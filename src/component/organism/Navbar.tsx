@@ -24,6 +24,9 @@ export default function Navbar() {
           <NavLink
             key={link.id}
             to={link.href}
+            onClick={() => {
+              sessionStorage.setItem('prevPath', location.pathname);
+            }}
             className={({ isActive }) =>
               `flex flex-col items-center transition-colors py-1 w-25 ${
                 isActive
