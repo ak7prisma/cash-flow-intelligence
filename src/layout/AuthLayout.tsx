@@ -22,7 +22,7 @@ export default function AuthLayout() {
       </div>
 
       {/* Main Content */}
-      <main className="w-full max-w-sm relative z-10">
+      <main className="w-full mx-5 my-8 max-w-sm relative z-10">
         <Outlet />
       </main>
     </div>
