@@ -1,4 +1,6 @@
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuthActions } from "../../hooks/useAuthActions";
 import { FormContainer } from "../../component/auth/FormContainer";
 import Input from "../../component/ui/Input";
 import Button from "../../component/ui/Button";
@@ -8,6 +10,24 @@ import SocialAuth from "../../component/auth/SocialAuth";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login, loginWithGoogle, handleRedirectCallback, loading, error } = useAuthActions();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  // Check for redirect result when page loads
+  useEffect(() => {
+    handleRedirectCallback(() => navigate("/"));
+  }, [handleRedirectCallback, navigate]);
+
+  const handleEmailLogin = async () => {
+    const success = await login(email, password);
+    if (success) navigate("/");
+  };
+
+  const handleGoogleLogin = async () => {
+    await loginWithGoogle();
+  };
 
   return (
     <div className="flex flex-col items-center justify-center animate-in fade-in duration-700">
@@ -26,14 +46,23 @@ export default function Login() {
           </p>
         }
       >
-        <FormContainer>
+        <FormContainer onSubmit={handleEmailLogin}>
           <div className="space-y-4 text-left">
+            {error && (
+              <div className="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs font-medium tracking-wide animate-in fade-in slide-in-from-top-2 duration-300">
+                {error}
+              </div>
+            )}
+
             <Input 
               label="Email Address" 
               type="email" 
               placeholder="name@company.com" 
               className="text-slate-900 dark:text-slate-300"
               inputClassName="order-none text-sm placeholder:text-slate-400"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={loading}
             />
             
             <Input 
@@ -42,6 +71,9 @@ export default function Login() {
               placeholder="••••••••••••" 
               className="text-slate-900 dark:text-slate-300"
               inputClassName="order-none text-sm"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={loading}
               rightLabel={
                 <Link to="/auth/ForgotPass" className="text-xs font-bold text-teal-800 dark:text-cyan-400 hover:underline">
                   Forgot Password?
@@ -52,13 +84,17 @@ export default function Login() {
 
           <div className="space-y-4">
             <Button 
-              text="Continue"
+              text={loading ? "Processing..." : "Continue"}
               variant="primary"
-              onClick={() => navigate("/")}
+              type="submit"
+              disabled={loading}
               className="h-16 shadow-lg shadow-teal-900/20 dark:shadow-cyan-400/20"
             />
 
-            <SocialAuth />
+            <SocialAuth 
+              onGoogleClick={handleGoogleLogin} 
+              loading={loading} 
+            />
           </div>
         </FormContainer>
       </AuthCard>

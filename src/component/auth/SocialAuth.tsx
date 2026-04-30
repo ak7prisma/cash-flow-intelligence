@@ -3,9 +3,11 @@ import Button from "../ui/Button";
 
 interface SocialAuthProps {
   label?: string;
+  onGoogleClick?: () => void;
+  loading?: boolean;
 }
 
-export default function SocialAuth({ label = "OR SIGN IN WITH" }: SocialAuthProps) {
+export default function SocialAuth({ label = "OR SIGN IN WITH", onGoogleClick, loading = false }: Readonly<SocialAuthProps>) {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4 py-2">
@@ -17,14 +19,15 @@ export default function SocialAuth({ label = "OR SIGN IN WITH" }: SocialAuthProp
       </div>
 
       <Button 
-        text="Google" 
+        text={loading ? "Connecting..." : "Google"}
         variant="secondary"
-        onClick={() => alert("Google Sign-In coming soon!")}
+        onClick={onGoogleClick}
         icon={<FcGoogle size={24} />}
         justify="center"
         showIconBg={false}
         iconPosition="left"
         className="text-blue-950 dark:text-slate-100"
+        disabled={loading}
       />
     </div>
   );

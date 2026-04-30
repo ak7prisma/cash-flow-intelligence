@@ -1,10 +1,24 @@
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { LuSmartphone, LuSparkles } from "react-icons/lu";
+import { useAuthActions } from "../../hooks/useAuthActions";
 import Button from "../../component/ui/Button";
 import Logo from "../../component/ui/Logo";
 
 export default function Welcome() {
+  const navigate = useNavigate();
+  const { loginWithGoogle, handleRedirectCallback, loading } = useAuthActions();
+
+  // Check for redirect result when page loads
+  useEffect(() => {
+    handleRedirectCallback(() => navigate("/"));
+  }, [handleRedirectCallback, navigate]);
+
+  const handleGoogleLogin = async () => {
+    await loginWithGoogle();
+  };
+
   return (
     <div className="flex flex-col justify-between gap-25 items-center text-center animate-in fade-in slide-in-from-bottom-8">
 
@@ -45,13 +59,15 @@ export default function Welcome() {
             text="Login via Email"
             to="/auth/Login"
             icon={<LuSmartphone size={24} />}
+            disabled={loading}
           />
 
           <Button
             variant="secondary"
-            text="Login via Google"
+            text={loading ? "Connecting..." : "Login via Google"}
             icon={<FcGoogle size={24} />}
-            onClick={() => alert("Google Sign-In coming soon!")}
+            onClick={handleGoogleLogin}
+            disabled={loading}
           />
         </div>
 
@@ -74,4 +90,3 @@ export default function Welcome() {
     </div>
   );
 }
-

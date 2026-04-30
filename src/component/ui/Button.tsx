@@ -13,6 +13,7 @@ interface ButtonProps {
   justify?: "center" | "between";
   iconPosition?: "left" | "right";
   showIconBg?: boolean;
+  disabled?: boolean;
 }
 
 export default function Button({
@@ -26,14 +27,16 @@ export default function Button({
   justify,
   iconPosition = "right",
   showIconBg = true,
+  disabled = false,
 }: Readonly<ButtonProps>) {
   
   const config = VARIANT_CONFIGS[variant];
   const finalJustify = justify ?? (icon ? "between" : "center");
   
   const baseStyles = "w-full transition-all duration-300 active:scale-[0.98] flex items-center";
+  const disabledStyles = disabled ? "opacity-50 pointer-events-none" : "";
   const alignmentStyles = finalJustify === "between" ? "justify-between" : "justify-center gap-2";
-  const combinedClassName = `${baseStyles} ${config.container} ${alignmentStyles} ${className}`;
+  const combinedClassName = `${baseStyles} ${config.container} ${alignmentStyles} ${disabledStyles} ${className}`;
 
   const renderIcon = () => {
     if (!icon) return null;
@@ -66,7 +69,7 @@ export default function Button({
   }
 
   return (
-    <button type={type} onClick={onClick} className={combinedClassName}>
+    <button type={type} onClick={onClick} disabled={disabled} className={combinedClassName}>
       {renderContent()}
     </button>
   );

@@ -1,4 +1,6 @@
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuthActions } from "../../hooks/useAuthActions";
 import Button from "../../component/ui/Button";
 import Input from "../../component/ui/Input";
 import AuthHeader from "../../component/auth/AuthHeader";
@@ -8,6 +10,41 @@ import SocialAuth from "../../component/auth/SocialAuth";
 
 export default function Register() {
   const navigate = useNavigate();
+  const { register, loginWithGoogle, handleRedirectCallback, loading, error, setError } = useAuthActions();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [agreed, setAgreed] = useState(false);
+
+  // Check for redirect result when page loads
+  useEffect(() => {
+    handleRedirectCallback(() => navigate("/"));
+  }, [handleRedirectCallback, navigate]);
+
+  const handleRegister = async () => {
+    if (!agreed) {
+      setError("You must agree to the Terms of Service and Privacy Protocol.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match. Please check and try again.");
+      return;
+    }
+
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters long.");
+      return;
+    }
+
+    const success = await register(email, password);
+    if (success) navigate("/");
+  };
+
+  const handleGoogleRegister = async () => {
+    await loginWithGoogle();
+  };
 
   return (
     <div className="flex flex-col items-center justify-center animate-in fade-in duration-700">
@@ -26,14 +63,23 @@ export default function Register() {
           </p>
         }
       >
-        <FormContainer>
+        <FormContainer onSubmit={handleRegister}>
           <div className="space-y-4">
+            {error && (
+              <div className="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs font-medium tracking-wide animate-in fade-in slide-in-from-top-2 duration-300">
+                {error}
+              </div>
+            )}
+
             <Input 
               label="Email Address" 
               type="email" 
               placeholder="name@company.com"
               className="text-slate-900 dark:text-slate-300"
               inputClassName="order-none text-sm placeholder:text-slate-400"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={loading}
             />
             
             <Input 
@@ -42,7 +88,10 @@ export default function Register() {
               placeholder="123asd!@#"
               className="text-slate-900 dark:text-slate-300"
               inputClassName="order-none text-sm placeholder:text-slate-400"
-              hint="Use 8+ characters with a mix of letters, numbers & symbols."
+              hint="Use 8+ characters with a mix of letters, numbers &amp; symbols."
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={loading}
             />
 
             <Input 
@@ -51,11 +100,17 @@ export default function Register() {
               placeholder="••••••••••••"
               className="text-slate-900 dark:text-slate-300"
               inputClassName="order-none text-sm placeholder:text-slate-400"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              disabled={loading}
             />
 
             <div className="flex items-start gap-3">
               <input 
                 type="checkbox" 
+                checked={agreed}
+                onChange={(e) => setAgreed(e.target.checked)}
+                disabled={loading}
                 className="mt-1 w-4 h-4 rounded-3xl dark:bg-slate-900 accent-teal-800 dark:accent-cyan-400  cursor-pointer" 
               />
               <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 leading-relaxed tracking-wide">
@@ -73,12 +128,16 @@ export default function Register() {
 
           <div className="space-y-4">
             <Button 
-              text="Register" 
-              onClick={() => navigate("/")}
+              text={loading ? "Processing..." : "Register"}
+              type="submit"
+              disabled={loading}
               className="h-16 shadow-lg shadow-teal-900/20 dark:shadow-cyan-400/20"
             />
 
-            <SocialAuth />
+            <SocialAuth 
+              onGoogleClick={handleGoogleRegister} 
+              loading={loading} 
+            />
           </div>
         </FormContainer>
       </AuthCard>
