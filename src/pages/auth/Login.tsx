@@ -18,7 +18,7 @@ export default function Login() {
 
       <AuthCard
         footer={
-          <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 tracking-wide">
+          <p className="text-xs font-base text-slate-600 dark:text-slate-400 tracking-wide">
             Don't have an account?{" "}
             <Link to="/auth/Register" className="text-teal-800 dark:text-cyan-400 font-bold hover:underline">
               Create an account
