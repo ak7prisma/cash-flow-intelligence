@@ -4,7 +4,7 @@ interface FormContainerProps {
 
 export const FormContainer = ({ children } : FormContainerProps) => {
   return (
-    <form className="flex flex-col justify-center gap-10 w-full">
+    <form className="flex flex-col justify-center gap-5 w-full">
       {children}
     </form>
   );

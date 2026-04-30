@@ -45,14 +45,13 @@ export default function Welcome() {
             text="Login via Email"
             to="/auth/Login"
             icon={<LuSmartphone size={24} />}
-            className="bg-teal-800 dark:bg-cyan-400 text-white dark:text-slate-950 shadow-2xl shadow-cyan-500/20"
           />
 
           <Button
             variant="secondary"
             text="Login via Google"
             icon={<FcGoogle size={24} />}
-            className="bg-white/90 dark:bg-slate-50/5  backdrop-blur-xl text-blue-950 dark:text-slate-100"
+            onClick={() => alert("Google Sign-In coming soon!")}
           />
         </div>
 
