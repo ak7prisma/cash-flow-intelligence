@@ -14,4 +14,9 @@ export const VARIANT_CONFIGS = {
     icon: "ml-2",
     text: "text-sm font-semibold",
   },
+  danger: {
+    container: "h-15 bg-red-600 dark:bg-[#FF7A7A] text-white dark:text-slate-900 px-6 rounded-2xl",
+    icon: "p-3 bg-white/10 dark:bg-black/10 rounded-2xl ml-2",
+    text: "text-base font-semibold",
+  },
 } as const;

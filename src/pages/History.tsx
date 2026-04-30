@@ -1,9 +1,14 @@
 import { useState } from "react";
 import { movements } from "../data/dummytester";
 import MovementCard from "../component/History/MovementCard";
+import DeleteModals from "../component/modals/DeleteModals";
+import EditModals from "../component/modals/EditModals";
 
 export default function History() {
   const [activeFilter, setActiveFilter] = useState("All");
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<any>(null);
 
   const filters = ["All", "Income", "Expense"];
 
@@ -11,6 +16,16 @@ export default function History() {
     if (activeFilter === "All") return true;
     return item.type.toLowerCase() === activeFilter.toLowerCase();
   });
+
+  const handleDeleteClick = (item: any) => {
+    setSelectedItem(item);
+    setIsDeleteOpen(true);
+  };
+
+  const handleEditClick = (item: any) => {
+    setSelectedItem(item);
+    setIsEditOpen(true);
+  };
 
   return (
     <div className="flex flex-col gap-6 w-full">
@@ -44,9 +59,33 @@ export default function History() {
       {/* Transactions List */}
       <div className="flex flex-col gap-4">
         {filteredMovements.map((item) => (
-          <MovementCard key={item.id} item={item}/>
+          <MovementCard 
+            key={item.id} 
+            item={item}
+            onDelete={() => handleDeleteClick(item)}
+            onEdit={() => handleEditClick(item)}
+          />
         ))}
       </div>
+
+      {/* Modals */}
+      {selectedItem && (
+        <>
+          <DeleteModals 
+            isOpen={isDeleteOpen}
+            onClose={() => setIsDeleteOpen(false)}
+            onDelete={() => console.log("Deleting", selectedItem.id)}
+            itemName={selectedItem.title}
+            itemAmount={selectedItem.amount}
+          />
+          <EditModals 
+            isOpen={isEditOpen}
+            onClose={() => setIsEditOpen(false)}
+            onSave={(data) => console.log("Saving", data)}
+            item={selectedItem}
+          />
+        </>
+      )}
     </div>
   );
 }

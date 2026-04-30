@@ -10,9 +10,11 @@ interface MovementCardProps {
     type: string;
     icon: any;
   };
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
-export default function MovementCard({ item }: Readonly<MovementCardProps>) {
+export default function MovementCard({ item, onEdit, onDelete }: Readonly<MovementCardProps>) {
   return (
     <div
       className="group relative overflow-hidden bg-white/80 dark:bg-slate-900/40 backdrop-blur-sm p-5 rounded-xl border border-slate-100 dark:border-slate-800/50 shadow-sm transition-all duration-300"
@@ -29,10 +31,22 @@ export default function MovementCard({ item }: Readonly<MovementCardProps>) {
             {item.title}
           </h3>
           <div className="flex items-center gap-2 rounded-lg group-hover:opacity-100 transition-opacity duration-300">
-            <button className="text-slate-400 transition-colors">
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit?.();
+              }}
+              className="text-slate-400 hover:text-teal-600 dark:hover:text-cyan-400 transition-colors p-1"
+            >
               <LuPencil size={14} />
             </button>
-            <button className="text-slate-400 transition-colors">
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete?.();
+              }}
+              className="text-slate-400 hover:text-red-500 transition-colors p-1"
+            >
               <LuTrash2 size={14} />
             </button>
           </div>

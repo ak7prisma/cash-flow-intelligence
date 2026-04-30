@@ -1,10 +1,8 @@
-import { useState } from "react";
+import { useState, type InputHTMLAttributes } from "react";
 import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 
-interface FormInputProps {
+interface FormInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
-  type?: string;
-  placeholder?: string;
   hint?: string;
   className?: string;
   inputClassName?: string;
@@ -14,11 +12,11 @@ interface FormInputProps {
 export default function Input({
   label,
   type = "text",
-  placeholder,
   hint,
   className = "",
   inputClassName = "",
   rightLabel,
+  ...props
 }: Readonly<FormInputProps>) {
   const isPassword = type === "password";
   const [isActive, setIsActive] = useState(false);
@@ -35,8 +33,8 @@ export default function Input({
       )}
       <div className="relative">
         <input
+          {...props}
           type={isPassword && isActive ? "text" : type}
-          placeholder={placeholder}
           className={`w-full h-14 px-5 rounded-xl bg-[#EEEEEF] dark:bg-slate-950/40 text-lg focus:ring-2 focus:ring-teal-800 dark:focus:ring-cyan-400 focus:outline-none transition-colors ${
             isPassword ? "pr-14" : "pr-5"
           } ${inputClassName}`}

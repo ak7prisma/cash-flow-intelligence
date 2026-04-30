@@ -4,7 +4,7 @@ import { VARIANT_CONFIGS } from "../../utils/buttonVariant";
 
 interface ButtonProps {
   text: string;
-  variant?: "primary" | "secondary" | "ghost";
+  variant?: "primary" | "secondary" | "ghost" | "danger";
   to?: string;
   icon?: ReactNode;
   className?: string;
