@@ -1,5 +1,6 @@
 import { BiArrowBack } from "react-icons/bi";
 import { NavLink, useLocation } from "react-router-dom";
+import { auth } from "../../service/firebase";
 
 export default function ProfileHeader({ text }: Readonly<{ text: string }>) {
     
@@ -7,12 +8,12 @@ export default function ProfileHeader({ text }: Readonly<{ text: string }>) {
 
     let backTo = "/profile";
     const currentPath = location.pathname.replace(/\/$/, "");
+    
     if (currentPath === "/profile") {
         backTo = "/";
-    } else if (currentPath === "/profile/privacy") {
+    } else if (currentPath === "/auth/privacy") {
 
-        const prevPath = sessionStorage.getItem("prevPath");
-        backTo = prevPath && prevPath !== "/profile/privacy" ? prevPath : "/profile";
+        backTo = auth.currentUser ? "/profile" : "/auth/Register";
     }
 
     return (

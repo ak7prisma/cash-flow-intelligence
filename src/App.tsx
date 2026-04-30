@@ -10,11 +10,11 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ResetPass from "./pages/auth/ResetPass";
 import ForgotPass from "./pages/auth/ForgotPass";
+import Privacy from "./pages/auth/Privacy";
 import SecuritySet from "./pages/profile/SecuritySet";
 import AboutApp from "./pages/profile/AboutApp";
 import DailyRemind from "./pages/profile/DailyRemind";
 import HelpSupp from "./pages/profile/HelpSupp";
-import Privacy from "./pages/profile/Privacy";
 import Welcome from "./pages/auth/Welcome";
 import { AuthProvider } from "./context/AuthContext";
 import { ProtectedRoute } from "./component/auth/ProtectedRoute";
@@ -42,7 +42,6 @@ function App() {
                 <Route path="/profile/aboutapp" element={<AboutApp />} />
                 <Route path="/profile/dailyremind" element={<DailyRemind />} />
                 <Route path="/profile/helpsupp" element={<HelpSupp />} />
-                <Route path="/profile/privacy" element={<Privacy />} />
               </Route>
             </Route>
 
@@ -53,6 +52,11 @@ function App() {
               <Route path="/auth/Register" element={<Register />} />
               <Route path="/auth/ForgotPass" element={<ForgotPass />} />
               <Route path="/auth/ResetPass" element={<ResetPass />} />
+            </Route>
+
+            {/* Public Privacy (using Profile Layout aesthetics) */}
+            <Route element={<ProfileLayout/>}>
+              <Route path="/auth/privacy" element={<Privacy />} />
             </Route>
 
           </Routes>

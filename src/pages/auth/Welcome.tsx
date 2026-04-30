@@ -73,16 +73,8 @@ export default function Welcome() {
 
         {/* Privacy */}
         <div className="px-10">
-          <p className="text-[9px] font-semibold text-slate-500 dark:text-slate-500 leading-relaxed tracking-widest">
-            By continuing, you agree to the{" "}
-            <Link to="/profile/privacy" className="text-blue-950 dark:text-cyan-400 font-bold transition-colors">
-              Terms of Service
-            </Link>{" "}
-            and{" "}
-            <Link to="/profile/privacy" className="text-blue-950 dark:text-cyan-400 font-bold transition-colors">
-              Privacy Policy
-            </Link>
-            .
+          <p className="text-[9px] font-semibold text-slate-500 dark:text-slate-500 leading-relaxed tracking-widest uppercase">
+            By continuing, you agree to our Terms of Service and Privacy Policy.
           </p>
         </div>
       </div>

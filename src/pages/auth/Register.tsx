@@ -115,11 +115,11 @@ export default function Register() {
               />
               <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 leading-relaxed tracking-wide">
                 I agree to the{" "}
-                <Link to="/profile/privacy" className="text-teal-800 dark:text-cyan-400 font-bold hover:underline">
+                <Link to="/auth/privacy" className="text-teal-800 dark:text-cyan-400 font-bold hover:underline">
                   Terms of Service
                 </Link>{" "}
                 and{" "}
-                <Link to="/profile/privacy" className="text-teal-800 dark:text-cyan-400 font-bold hover:underline">
+                <Link to="/auth/privacy" className="text-teal-800 dark:text-cyan-400 font-bold hover:underline">
                   Privacy Protocol
                 </Link>
               </p>
