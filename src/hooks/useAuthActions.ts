@@ -153,6 +153,19 @@ export const useAuthActions = () => {
     }
   };
 
+  const logout = async () => {
+    setLoading(true);
+    try {
+      await auth.signOut();
+      return true;
+    } catch (err: any) {
+      setError(getAuthErrorMessage(err.code));
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     loading,
     error,
@@ -163,6 +176,7 @@ export const useAuthActions = () => {
     finalizePasswordReset,
     changePassword,
     setError,
-    handleRedirectCallback
+    handleRedirectCallback,
+    logout
   };
 };
