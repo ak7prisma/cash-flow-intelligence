@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import InsightCard from "../component/Dashboard/InsightCard";
 import MonthlyChart from "../component/Dashboard/MonthlyChart";
 import RecentMove from "../component/Dashboard/RecentMove";
@@ -6,9 +6,24 @@ import RevenueCard from "../component/Dashboard/RevenueCard";
 import Title from "../component/Dashboard/Title";
 import WeeklyChart from "../component/Dashboard/WeeklyCharts";
 import { useTransactions } from "../hooks/useTransactions";
+import { getDailyAnalytics } from "../service/gemini";
 
 export default function Dashboard() {
   const { transactions, isLoading } = useTransactions();
+  const [aiInsight, setAiInsight] = useState("");
+  const [isAiLoading, setIsAiLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isLoading && transactions.length > 0) {
+      setIsAiLoading(true);
+      getDailyAnalytics(transactions.slice(0, 10))
+        .then((res) => setAiInsight(res))
+        .catch(() => setAiInsight("Gagal memuat analisis AI."))
+        .finally(() => setIsAiLoading(false));
+    } else if (!isLoading && transactions.length === 0) {
+      setAiInsight("Belum ada data transaksi untuk dianalisis.");
+    }
+  }, [isLoading, transactions]);
 
   const { totalIncome, totalExpense, balance } = useMemo(() => {
     let income = 0;
@@ -73,7 +88,7 @@ export default function Dashboard() {
     <div className="flex flex-col gap-4">
         <Title />
         <RevenueCard balance={balance} />
-        <InsightCard />
+        <InsightCard insight={aiInsight} isLoading={isAiLoading} />
         <WeeklyChart labels={weeklyTrend.labels} data={weeklyTrend.data} />
         <MonthlyChart income={totalIncome} expense={totalExpense} />
         <RecentMove transactions={transactions.slice(0, 3)} />
