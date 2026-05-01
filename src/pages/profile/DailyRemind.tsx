@@ -1,12 +1,20 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
+import { useSettingsStore } from '../../store/useSettingsStore';
+import { setupDailyNotification } from '../../utils/notifications';
 import Toggle from '../../component/ui/Toggle';
 import TimePicker from '../../component/ui/TimePicker';
 import FrequencyRadio from '../../component/ui/FrequencyRadio';
 
 export default function DailyRemind() {
-  const [notifEnabled, setNotifEnabled] = useState(true);
-  const [time, setTime] = useState('09:00');
-  const [frequency, setFrequency] = useState('daily');
+  const { 
+    notifEnabled, notifTime, notifFrequency,
+    setNotifEnabled, setNotifTime, setNotifFrequency 
+  } = useSettingsStore();
+
+  // Update notification schedule whenever settings change
+  useEffect(() => {
+    setupDailyNotification(notifTime, notifEnabled);
+  }, [notifEnabled, notifTime]);
 
   return (
     <div className="w-full mx-2">
@@ -45,16 +53,16 @@ export default function DailyRemind() {
             {/* Time Picker */}
             <TimePicker 
               label="Reminder Time" 
-              value={time} 
-              onChange={setTime} 
+              value={notifTime} 
+              onChange={setNotifTime} 
               hint="Pick a time when you usually review your expenses."
             />
 
             {/* Radio Frequency */}
             <FrequencyRadio 
               label="Frequency" 
-              value={frequency} 
-              onChange={setFrequency} 
+              value={notifFrequency} 
+              onChange={setNotifFrequency} 
             />
 
             {!notifEnabled && <div className="absolute inset-0 z-50 cursor-not-allowed" />}
