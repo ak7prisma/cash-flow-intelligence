@@ -1,7 +1,6 @@
 import { NavLink, useLocation, Link } from "react-router-dom";
 import { navlinks } from "../../data/navLinks";
 import { TbPlus } from "react-icons/tb";
-import ChatInput from "../Assistant/ChatInput";
 
 export default function Navbar() {
 
@@ -9,8 +8,6 @@ export default function Navbar() {
 
   const showAssistantButton = 
   location.pathname === '/' || location.pathname === '/history';
-
-  const isAssistantPath = location.pathname === '/assistant';
 
   return (
     <>
@@ -23,12 +20,10 @@ export default function Navbar() {
         </Link>
       )}
 
-      {isAssistantPath && <ChatInput />}
-
       <nav className="flex justify-between py-5 px-4 text-gray-700 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 text-sm backdrop-blur-md fixed bottom-0 left-0 right-0 z-50">
         {navlinks.map((link) => (
           <NavLink
-            key={link.id}
+            key={link.href}
             to={link.href}
             onClick={() => {
               sessionStorage.setItem('prevPath', location.pathname);
