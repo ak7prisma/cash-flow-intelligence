@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Cash Flow Intelligence</string>
+    <string name="title_activity_main">Cash Flow Intelligence</string>
+    <string name="package_name">vercel.app.ahmadkurniaprisma.cashflowintelliegence</string>
+    <string name="custom_url_scheme">vercel.app.ahmadkurniaprisma.cashflowintelliegence</string>
+</resources>
