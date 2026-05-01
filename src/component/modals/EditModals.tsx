@@ -16,6 +16,7 @@ interface EditModalsProps {
     time: string;
     icon: any;
   };
+  rawItem?: any;
 }
 
 const CATEGORIES = [
@@ -31,8 +32,10 @@ export default function EditModals({
   onClose,
   onSave,
   item,
+  rawItem,
 }: Readonly<EditModalsProps>) {
-  const [selectedCategory, setSelectedCategory] = useState(CATEGORIES[0]);
+  const [selectedCategory, setSelectedCategory] = useState(item?.title || CATEGORIES[0]);
+  const [amount, setAmount] = useState(rawItem?.amount?.toString() || "");
 
   const formattedDate = useMemo(() => {
     const today = new Date();
@@ -46,7 +49,11 @@ export default function EditModals({
     }
 
     return today.toISOString().split("T")[0];
-  }, [item.time]);
+  }, [item?.time]);
+
+  const [date, setDate] = useState(formattedDate);
+
+  if (!item) return null;
 
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
@@ -71,10 +78,11 @@ export default function EditModals({
         <div className="flex flex-col gap-6">
           <Input 
             label="AMOUNT" 
-            placeholder="Rp 0" 
+            placeholder="0" 
             className="text-slate-500 dark:text-slate-400"
             inputClassName="text-2xl font-bold text-blue-950 dark:text-white !bg-slate-100 dark:!bg-slate-800/70 !h-16 border-none"
-            defaultValue={item.amount}
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
           />
 
           <Select 
@@ -86,7 +94,8 @@ export default function EditModals({
 
           <DateInput 
             label="TRANSACTION DATE"
-            defaultValue={formattedDate}
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
           />
         </div>
 
@@ -96,7 +105,11 @@ export default function EditModals({
             text="Save Changes"
             variant="primary"
             onClick={() => {
-              onSave({});
+              onSave({
+                amount: Number(amount) || 0,
+                category: selectedCategory,
+                date: new Date(date)
+              });
               onClose();
             }}
             className="h-16 bg-teal-800 dark:bg-cyan-400 text-white dark:text-slate-950 font-bold rounded-2xl shadow-lg shadow-teal-500/20 dark:shadow-cyan-400/20"

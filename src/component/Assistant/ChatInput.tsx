@@ -24,7 +24,7 @@ export default function ChatInput({ onSend, disabled = false }: Readonly<ChatInp
   };
 
   return (
-    <div className="fixed bottom-22 left-0 right-0 px-5 z-40 animate-in slide-in-from-bottom-5 duration-500">
+    <div className="fixed bottom-25 left-0 right-0 px-5 z-40 animate-in slide-in-from-bottom-5 duration-500">
       <div className="max-w-2xl mx-auto flex items-center gap-2 p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-none backdrop-blur-md">
         <button className="p-3 text-slate-500 dark:text-slate-400 transition-colors">
           <RiMicLine size={22} />

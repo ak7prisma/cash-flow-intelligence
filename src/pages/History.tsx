@@ -5,9 +5,12 @@ import EditModals from "../component/modals/EditModals";
 import { formatIDR } from "../utils/assistantHelpers";
 import { getCategoryIcon } from "../utils/categoryIcons";
 import { useTransactions } from "../hooks/useTransactions";
+import { useTransactionStore } from "../store/useTransactionStore";
+import { transactionService } from "../service/TransactionService";
 
 export default function History() {
   const { isLoading, activeFilter, setActiveFilter, filteredMovements } = useTransactions();
+  const { transactions, setTransactions } = useTransactionStore();
   
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -15,14 +18,56 @@ export default function History() {
 
   const filters = ["All", "Income", "Expense"];
 
-  const handleDeleteClick = (item: any) => {
-    setSelectedItem(item);
+  const handleDeleteClick = (raw: any, mapped: any) => {
+    setSelectedItem({ raw, mapped });
     setIsDeleteOpen(true);
   };
 
-  const handleEditClick = (item: any) => {
-    setSelectedItem(item);
+  const handleEditClick = (raw: any, mapped: any) => {
+    setSelectedItem({ raw, mapped });
     setIsEditOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedItem?.raw?.id) return;
+    
+    const idToDelete = selectedItem.raw.id;
+    const previousTransactions = [...transactions];
+    
+    setTransactions(transactions.filter(tx => tx.id !== idToDelete));
+    setIsDeleteOpen(false); 
+
+    try {
+      await transactionService.deleteTransaction(idToDelete);
+    } catch (error) {
+      console.error("Gagal menghapus data di Firestore:", error);
+      setTransactions(previousTransactions);
+      alert("Gagal menghapus transaksi. Periksa koneksi internet Anda.");
+    }
+  };
+
+  const handleConfirmEdit = async (updatedData: any) => {
+    if (!selectedItem?.raw?.id) return;
+    
+    const idToUpdate = selectedItem.raw.id;
+    const previousTransactions = [...transactions];
+    
+    const { id, ...payloadWithoutId } = updatedData;
+    
+    setTransactions(
+      transactions.map(tx => 
+        tx.id === idToUpdate ? { ...tx, ...payloadWithoutId } : tx
+      )
+    );
+    setIsEditOpen(false); 
+
+    try {
+      await transactionService.updateTransaction(idToUpdate, payloadWithoutId);
+    } catch (error) {
+      console.error("Gagal mengupdate data di Firestore:", error);
+      setTransactions(previousTransactions);
+      alert("Gagal menyimpan perubahan. Periksa koneksi internet Anda.");
+    }
   };
 
   return (
@@ -89,8 +134,8 @@ export default function History() {
                 <MovementCard 
                   key={mappedItem.id} 
                   item={mappedItem as any}
-                  onDelete={() => handleDeleteClick(item)}
-                  onEdit={() => handleEditClick(item)}
+                  onDelete={() => handleDeleteClick(item, mappedItem)}
+                  onEdit={() => handleEditClick(item, mappedItem)}
                 />
               );
             })}
@@ -104,15 +149,16 @@ export default function History() {
           <DeleteModals 
             isOpen={isDeleteOpen}
             onClose={() => setIsDeleteOpen(false)}
-            onDelete={() => console.log("Deleting", selectedItem.id)}
-            itemName={selectedItem.title}
-            itemAmount={selectedItem.amount}
+            onDelete={handleConfirmDelete}
+            itemName={selectedItem.mapped?.title}
+            itemAmount={selectedItem.mapped?.amount}
           />
           <EditModals 
             isOpen={isEditOpen}
             onClose={() => setIsEditOpen(false)}
-            onSave={(data) => console.log("Saving", data)}
-            item={selectedItem}
+            onSave={handleConfirmEdit}
+            item={selectedItem.mapped}
+            rawItem={selectedItem.raw}
           />
         </>
       )}
