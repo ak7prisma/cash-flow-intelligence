@@ -13,19 +13,23 @@ import {
 import { Line } from 'react-chartjs-2';
 import { MdOutlineShowChart } from 'react-icons/md';
 import { useMemo } from 'react';
-import { DAYS, CHART_DATA, TARGET_INDEX } from '../../data/dummytester';
 import { useDarkMode } from '../../hooks/useDarkMode';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Filler);
 
-export default function WeeklyChart() {
+interface WeeklyChartProps {
+  labels: string[];
+  data: number[];
+}
+
+export default function WeeklyChart({ labels, data }: Readonly<WeeklyChartProps>) {
   const isDark = useDarkMode();
 
   const chartData: ChartData<'line'> = useMemo(() => ({
-    labels: DAYS,
+    labels: labels.length > 0 ? labels : ['No Data'],
     datasets: [
       {
-        data: CHART_DATA,
+        data: data.length > 0 ? data : [0],
         fill: true,
         tension: 0.4,
         borderColor: isDark ? '#00F5FF' : '#00696B',
@@ -51,7 +55,7 @@ export default function WeeklyChart() {
         },
       }
     ]
-  }), [isDark]);
+  }), [isDark, labels, data]);
 
   const chartOptions: ChartOptions<'line'> = useMemo(() => ({
     responsive: true,
@@ -73,15 +77,11 @@ export default function WeeklyChart() {
         grid: { display: false },
         border: { display: false },
         ticks: {
-          color: (ctx) => {
-            if (ctx.index === TARGET_INDEX) return isDark ? '#00F5FF' : '#00696B';
-            return '#A8ABB3';
-          },
-          font: (ctx) => ({
+          color: '#A8ABB3',
+          font: {
             size: 11,
-            family: 'inherit',
-            weight: ctx.index === TARGET_INDEX ? 'bold' : 'normal'
-          })
+            family: 'inherit'
+          }
         }
       },
       y: {

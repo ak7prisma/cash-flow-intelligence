@@ -1,4 +1,8 @@
-export default function RevenueCard() {
+import { formatIDR } from "../../utils/assistantHelpers";
+
+export default function RevenueCard({ balance }: { readonly balance: number }) {
+  const formatted = formatIDR(balance).replace("Rp", "").trim();
+
   return (
     <div className="relative overflow-hidden rounded-3xl w-auto text-slate-400 bg-blue-950 dark:bg-slate-900/20 p-5 py-8 flex flex-col gap-4 place-items-center shadow-xl">
       
@@ -11,7 +15,7 @@ export default function RevenueCard() {
       
       <span className="relative z-10 flex font-bold gap-2 items-end">
         <p className="text-base text-cyan-300">Rp </p>
-        <p className="text-4xl text-slate-50">3.500.000</p>
+        <p className="text-4xl text-slate-50">{formatted}</p>
       </span>
       
     </div>
