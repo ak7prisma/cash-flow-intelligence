@@ -10,14 +10,14 @@ export default function MainLayout() {
   const showAssistantButton = location.pathname === '/' || location.pathname === '/history';
     
   return (
-    <div className="relative min-h-screen w-screen flex flex-col justify-between overflow-x-hidden transition-colors duration-300">
+    <div className="relative min-h-screen w-full flex flex-col justify-between overflow-x-hidden transition-colors duration-300">
     
       <BackgroundElement /> 
       
       <div className={`relative z-10 flex flex-col mt-23 ${showAssistantButton? 'mb-40' : 'mb-20' }`}>
         <MainHeader />
         
-        <main className="mx-5 my-5 flex flex-col justify-start items-start">
+        <main className="mx-5 my-5 flex flex-col justify-start items-center">
           <Outlet />
         </main>
         

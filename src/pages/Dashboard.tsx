@@ -88,7 +88,7 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center min-h-[60vh]">
+      <div className="flex flex-1 flex-col items-center justify-center">
         <div className="text-center text-slate-500 font-medium animate-pulse">
           Calculating your insights...
         </div>
@@ -97,7 +97,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 w-full">
         <Title />
         <RevenueCard balance={balance} />
         <InsightCard insight={aiInsight} isLoading={isAiLoading} />
