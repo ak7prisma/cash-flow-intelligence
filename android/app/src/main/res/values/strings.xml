@@ -4,4 +4,5 @@
     <string name="title_activity_main">Cash Flow Intelligence</string>
     <string name="package_name">vercel.app.ahmadkurniaprisma.cashflowintelliegence</string>
     <string name="custom_url_scheme">vercel.app.ahmadkurniaprisma.cashflowintelliegence</string>
+    <string name="server_client_id">1030868000164-bis69dbhtsmkm7qa1i38i91oprefke80.apps.googleusercontent.com</string>
 </resources>

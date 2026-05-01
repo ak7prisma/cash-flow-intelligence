@@ -1,7 +1,6 @@
 import { useState, useCallback } from "react";
 import { 
-  signInWithEmailAndPassword, 
-  signInWithRedirect, 
+  signInWithEmailAndPassword,
   getRedirectResult,
   createUserWithEmailAndPassword, 
   updateProfile, 
@@ -10,11 +9,16 @@ import {
   reauthenticateWithCredential,
   EmailAuthProvider,
   updatePassword as firebaseUpdatePassword,
+  signInWithCredential,
+  GoogleAuthProvider,
   type User
 } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
-import { auth, db, googleProvider } from "../service/firebase";
+import { auth, db } from "../service/firebase";
 import { getAuthErrorMessage } from "../data/authMessages";
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+import { Capacitor } from '@capacitor/core';
+import { AUTH_CONFIG } from '../service/authConfig';
 
 export const useAuthActions = () => {
   const [loading, setLoading] = useState(false);
@@ -69,11 +73,26 @@ export const useAuthActions = () => {
     setLoading(true);
     setError(null);
     try {
-      // Switch from Popup to Redirect to avoid browser blocking
-      await signInWithRedirect(auth, googleProvider);
+      if (!Capacitor.isNativePlatform()) {
+        GoogleAuth.initialize({
+          clientId: AUTH_CONFIG.GOOGLE_WEB_CLIENT_ID,
+          scopes: ['profile', 'email'],
+          grantOfflineAccess: true,
+        });
+      }
+
+      const googleUser = await GoogleAuth.signIn();
+      const idToken = googleUser.authentication.idToken;
+      if (!idToken) throw new Error("Google Sign-In failed: no idToken.");
+
+      const credential = GoogleAuthProvider.credential(idToken);
+      const result = await signInWithCredential(auth, credential);
+      await createUserDocument(result.user);
+      
       return true;
     } catch (err: any) {
-      setError(getAuthErrorMessage(err.code));
+      console.error("Error during Google Login:", err);
+      setError(err.message || getAuthErrorMessage(err.code));
       setLoading(false);
       return false;
     }

@@ -1,4 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom"
+import { useEffect } from "react";
+import { setupDailyNotification } from "./utils/notifications";
 import Dashboard from "./pages/Dashboard";
 import Assistant from "./pages/Assistant";
 import Profile from "./pages/Profile";
@@ -21,6 +23,10 @@ import { ProtectedRoute } from "./component/auth/ProtectedRoute";
 import { ToastProvider } from "./component/ui/Toast";
 
 function App() {
+
+  useEffect(() => {
+    setupDailyNotification();
+  }, []);
 
   return (
     <BrowserRouter>
