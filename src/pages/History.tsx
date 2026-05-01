@@ -1,57 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import MovementCard from "../component/History/MovementCard";
 import DeleteModals from "../component/modals/DeleteModals";
 import EditModals from "../component/modals/EditModals";
-import { useAuth } from "../context/AuthContext";
-import { transactionService } from "../service/TransactionService";
-import { Transaction } from "../models/Transaction";
 import { formatIDR } from "../utils/assistantHelpers";
-import { 
-  LuUtensils, 
-  LuCar, 
-  LuShoppingBag, 
-  LuWallet, 
-  LuHeartPulse, 
-  LuReceipt, 
-  LuMoveHorizontal 
-} from "react-icons/lu";
-
-const getCategoryIcon = (category: string) => {
-  const cat = category.toLowerCase();
-  if (cat.includes("food") || cat.includes("drink")) return LuUtensils;
-  if (cat.includes("transport")) return LuCar;
-  if (cat.includes("shopping")) return LuShoppingBag;
-  if (cat.includes("salary") || cat.includes("income")) return LuWallet;
-  if (cat.includes("health")) return LuHeartPulse;
-  if (cat.includes("bill") || cat.includes("utility")) return LuReceipt;
-  return LuMoveHorizontal;
-};
+import { getCategoryIcon } from "../utils/categoryIcons";
+import { useTransactions } from "../hooks/useTransactions";
 
 export default function History() {
-  const { user } = useAuth();
-  const [activeFilter, setActiveFilter] = useState("All");
+  const { isLoading, activeFilter, setActiveFilter, filteredMovements } = useTransactions();
+  
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   const filters = ["All", "Income", "Expense"];
-
-  useEffect(() => {
-    if (user) {
-      setIsLoading(true);
-      transactionService.getTransactionsByUser(user.uid)
-        .then((data) => setTransactions(data))
-        .catch((err) => console.error("Error fetching transactions:", err))
-        .finally(() => setIsLoading(false));
-    }
-  }, [user]);
-
-  const filteredMovements = transactions.filter((item) => {
-    if (activeFilter === "All") return true;
-    return item.type.toLowerCase() === activeFilter.toLowerCase();
-  });
 
   const handleDeleteClick = (item: any) => {
     setSelectedItem(item);
