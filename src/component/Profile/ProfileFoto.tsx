@@ -3,6 +3,7 @@ import { TbPencil, TbLoader2, TbUser } from 'react-icons/tb';
 import { useAuth } from '../../context/AuthContext';
 import { updateProfile } from 'firebase/auth';
 import { uploadToCloudinary } from '../../service/cloudinary';
+import imageCompression from 'browser-image-compression';
 
 export default function ProfileFoto() {
   const { user } = useAuth();
@@ -16,7 +17,15 @@ export default function ProfileFoto() {
 
     try {
       setIsUploading(true);
-      const secureUrl = await uploadToCloudinary(file);
+      
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1024,
+        useWebWorker: true,
+      };
+      
+      const compressedFile = await imageCompression(file, options);
+      const secureUrl = await uploadToCloudinary(compressedFile);
       
       await updateProfile(user, { photoURL: secureUrl });
       
