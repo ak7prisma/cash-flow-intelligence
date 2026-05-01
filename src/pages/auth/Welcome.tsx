@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { LuSmartphone, LuSparkles } from "react-icons/lu";
 import { useAuthActions } from "../../hooks/useAuthActions";
