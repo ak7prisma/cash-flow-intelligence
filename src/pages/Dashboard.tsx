@@ -15,9 +15,21 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!isLoading && transactions.length > 0) {
+      const today = new Date().toISOString().split('T')[0];
+      const cacheKey = `geminiInsight_${today}`;
+      const cachedInsight = localStorage.getItem(cacheKey);
+
+      if (cachedInsight) {
+        setAiInsight(cachedInsight);
+        return;
+      }
+
       setIsAiLoading(true);
       getDailyAnalytics(transactions.slice(0, 10))
-        .then((res) => setAiInsight(res))
+        .then((res) => {
+          setAiInsight(res);
+          localStorage.setItem(cacheKey, res);
+        })
         .catch(() => setAiInsight("Gagal memuat analisis AI."))
         .finally(() => setIsAiLoading(false));
     } else if (!isLoading && transactions.length === 0) {
@@ -76,7 +88,7 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center py-20">
+      <div className="flex flex-1 flex-col items-center justify-center min-h-[60vh]">
         <div className="text-center text-slate-500 font-medium animate-pulse">
           Calculating your insights...
         </div>

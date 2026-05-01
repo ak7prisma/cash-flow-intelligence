@@ -57,8 +57,10 @@ export default function History() {
       {/* Transactions List */}
       <div className="flex flex-col gap-4">
         {isLoading && (
-          <div className="text-center py-10 text-slate-500 font-medium animate-pulse">
-            Loading your movements...
+          <div className="flex flex-col items-center justify-center min-h-[50vh]">
+            <div className="text-center text-slate-500 font-medium animate-pulse">
+              Loading your movements...
+            </div>
           </div>
         )}
         {!isLoading && filteredMovements.length === 0 && (

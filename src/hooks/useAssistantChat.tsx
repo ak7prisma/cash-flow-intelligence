@@ -6,17 +6,10 @@ import { transactionService } from "../service/TransactionService";
 import { type ChatMessage, generateId, getCurrentTime, formatIDR } from "../utils/assistantHelpers";
 import TransactionConfirmationBubble from "../component/Assistant/TransactionConfirmationBubble";
 import FinancialAnalysisBubble from "../component/Assistant/FinancialAnalysisBubble";
+import { useChatStore } from "../store/useChatStore";
 
 export function useAssistantChat(user: any) {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: generateId(),
-      type: "bot",
-      message:
-        "Hello! I'm your AI Cash Intelligence assistant. How can I help you log your expenses today?",
-      time: getCurrentTime(),
-    },
-  ]);
+  const { messages, setMessages } = useChatStore();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSendMessage = async (text: string) => {

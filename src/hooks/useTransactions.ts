@@ -1,23 +1,28 @@
 import { useState, useEffect, useMemo } from "react";
 import { transactionService } from "../service/TransactionService";
-import { Transaction } from "../models/Transaction";
 import { useAuth } from "../context/AuthContext";
+import { useTransactionStore } from "../store/useTransactionStore";
 
 export function useTransactions() {
   const { user } = useAuth();
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { transactions, isLoaded, setTransactions, setIsLoaded } = useTransactionStore();
+  const [isLoading, setIsLoading] = useState(!isLoaded);
   const [activeFilter, setActiveFilter] = useState("All");
 
   useEffect(() => {
-    if (user) {
+    if (user && !isLoaded) {
       setIsLoading(true);
       transactionService.getTransactionsByUser(user.uid)
-        .then((data) => setTransactions(data))
+        .then((data) => {
+          setTransactions(data);
+          setIsLoaded(true);
+        })
         .catch((err) => console.error("Error fetching transactions:", err))
         .finally(() => setIsLoading(false));
+    } else if (isLoaded) {
+      setIsLoading(false);
     }
-  }, [user]);
+  }, [user, isLoaded, setTransactions, setIsLoaded]);
 
   const filteredMovements = useMemo(() => {
     return transactions.filter((item) => {
