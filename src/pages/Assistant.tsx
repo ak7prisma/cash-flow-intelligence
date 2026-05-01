@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import ChatBubble from "../component/Assistant/ChatBubble";
 import ChatInput from "../component/Assistant/ChatInput";
-import { RiSparkling2Line, RiRobot2Line, RiCheckLine, RiStickyNoteLine, RiErrorWarningLine } from "react-icons/ri";
+import { RiSparkling2Line, RiRobot2Line, RiCheckLine, RiStickyNoteLine, RiErrorWarningLine, RiWallet3Line, RiPieChartLine, RiLightbulbFlashLine } from "react-icons/ri";
 import { useAuth } from "../context/AuthContext";
 import { parseTransactionIntent, chatWithGemini } from "../service/gemini";
 import { Transaction } from "../models/Transaction";
@@ -137,13 +137,65 @@ export default function Assistant() {
 
         setMessages((prev) => [...prev, confirmationMessage]);
       } else {
-        // Step 2B: Normal conversational response
-        const geminiReply = await chatWithGemini(text);
+        
+        const stats = await transactionService.getDashboardStats(user.uid);
+        const recentTxs = await transactionService.getRecentTransactions(user.uid, 5);
+        
+        const userData = {
+          stats,
+          recentTransactions: recentTxs.map(tx => ({
+            amount: tx.amount,
+            type: tx.type,
+            category: tx.category,
+            date: tx.date
+          }))
+        };
+
+        const geminiReply = await chatWithGemini(text, userData);
+
+        let botMessageContent: React.ReactNode;
+        
+        if (geminiReply.isFinance && geminiReply.isAnalysis) {
+          botMessageContent = (
+            <div className="space-y-3">
+              <div className="flex items-start gap-2">
+                <div className="p-1.5 bg-teal-100 dark:bg-cyan-900/30 text-teal-600 dark:text-cyan-400 rounded-lg">
+                  <RiWallet3Line className="text-lg" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-0.5">Status Saldo</h4>
+                  <p className="text-sm text-slate-600 dark:text-slate-300">{geminiReply.status}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <div className="p-1.5 bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 rounded-lg">
+                  <RiPieChartLine className="text-lg" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-0.5">Analisis Belanja</h4>
+                  <p className="text-sm text-slate-600 dark:text-slate-300">{geminiReply.analysis}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2 mt-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                <div className="p-1.5 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-lg">
+                  <RiLightbulbFlashLine className="text-lg" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-0.5">Saran</h4>
+                  <p className="text-sm text-slate-600 dark:text-slate-300 font-medium">{geminiReply.advice}</p>
+                </div>
+              </div>
+            </div>
+          );
+        } else {
+          // If it's a general reply or non-finance refusal
+          botMessageContent = (geminiReply as any).reply;
+        }
 
         const botMessage: ChatMessage = {
           id: generateId(),
           type: "bot",
-          message: geminiReply,
+          message: botMessageContent,
           time: getCurrentTime(),
         };
 
@@ -157,7 +209,7 @@ export default function Assistant() {
         type: "bot",
         message: (
           <div className="flex items-center gap-2">
-            Maaf, terjadi kesalahan saat memproses permintaan kamu. Coba lagi ya! <RiErrorWarningLine className="text-lg text-rose-500 shrink-0" />
+            Error connecting to AI server. Please try again! <RiErrorWarningLine className="text-lg text-rose-500 shrink-0" />
           </div>
         ),
         time: getCurrentTime(),

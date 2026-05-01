@@ -50,19 +50,64 @@ export const parseTransactionIntent = async (message: string): Promise<GeminiInt
 
     return parsed;
   } catch (error) {
+    if (error instanceof SyntaxError) {
+      return { isTransaction: false };
+    }
     console.error("Intent Parse Error:", error);
-
-    return { isTransaction: false };
+    throw error;
   }
 };
 
-export const chatWithGemini = async (message: string) => {
+export interface FinancialAnalysisResponse {
+  isFinance: true;
+  isAnalysis: true;
+  status: string;
+  analysis: string;
+  advice: string;
+}
+
+export interface GeneralChatResponse {
+  isFinance: true;
+  isAnalysis: false;
+  reply: string;
+}
+
+export interface NonFinanceResponse {
+  isFinance: false;
+  reply: string;
+}
+
+export type GeminiChatResponse = FinancialAnalysisResponse | GeneralChatResponse | NonFinanceResponse;
+
+export const chatWithGemini = async (message: string, userData?: any): Promise<GeminiChatResponse> => {
+  const strictPrompt = `
+You are a Cash Flow & Financial Analyst. Your PRIMARY jobs are: 1) Analyzing the user's injected financial data, 2) Providing short, concise financial advice/summaries (weekly/monthly) based on the data, and 3) Answering general finance questions.
+
+You MUST return your response in purely JSON format based on the following conditions:
+
+Condition 1: The user asks for a financial analysis or summary of their data.
+Return JSON: { "isFinance": true, "isAnalysis": true, "status": "Short status of their balance (e.g. Aman!, Defisit)", "analysis": "1-2 sentences analyzing their biggest expenses or income", "advice": "1-2 sentences of actionable financial advice" }
+
+Condition 2: The user asks a general finance question (not requiring analysis of their data).
+Return JSON: { "isFinance": true, "isAnalysis": false, "reply": "Your concise answer here" }
+
+Condition 3: The user asks about things completely UNRELATED to finance (e.g., cooking, coding, poems).
+Return JSON: { "isFinance": false, "reply": "Polite text refusing the request because you only handle finance." }
+
+IMPORTANT: Return ONLY raw JSON. No markdown, no \`\`\`json wrappers. Do not use markdown formatting like ** or * in the text values. Keep text values plain and conversational.
+
+Context Data: ${userData ? JSON.stringify(userData) : "No data provided."}
+
+User Message: ${message}
+`;
+
+  const result = await model.generateContent(strictPrompt);
+  const text = result.response.text().trim();
+  const cleaned = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+  
   try {
-    const result = await model.generateContent(message);
-    const response = result.response;
-    return response.text();
-  } catch (error) {
-    console.error("Gemini Error:", error);
-    return "Maaf Bre, koneksi ke otak AI gue lagi terganggu. Coba lagi ya!";
+    return JSON.parse(cleaned);
+  } catch(e) {
+    return { isFinance: true, isAnalysis: false, reply: cleaned };
   }
 };
