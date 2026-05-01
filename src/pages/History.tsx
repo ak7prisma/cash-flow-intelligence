@@ -1,18 +1,54 @@
-import { useState } from "react";
-import { movements } from "../data/dummytester";
+import { useState, useEffect } from "react";
 import MovementCard from "../component/History/MovementCard";
 import DeleteModals from "../component/modals/DeleteModals";
 import EditModals from "../component/modals/EditModals";
+import { useAuth } from "../context/AuthContext";
+import { transactionService } from "../service/TransactionService";
+import { Transaction } from "../models/Transaction";
+import { formatIDR } from "../utils/assistantHelpers";
+import { 
+  LuUtensils, 
+  LuCar, 
+  LuShoppingBag, 
+  LuWallet, 
+  LuHeartPulse, 
+  LuReceipt, 
+  LuMoveHorizontal 
+} from "react-icons/lu";
+
+const getCategoryIcon = (category: string) => {
+  const cat = category.toLowerCase();
+  if (cat.includes("food") || cat.includes("drink")) return LuUtensils;
+  if (cat.includes("transport")) return LuCar;
+  if (cat.includes("shopping")) return LuShoppingBag;
+  if (cat.includes("salary") || cat.includes("income")) return LuWallet;
+  if (cat.includes("health")) return LuHeartPulse;
+  if (cat.includes("bill") || cat.includes("utility")) return LuReceipt;
+  return LuMoveHorizontal;
+};
 
 export default function History() {
+  const { user } = useAuth();
   const [activeFilter, setActiveFilter] = useState("All");
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const filters = ["All", "Income", "Expense"];
 
-  const filteredMovements = movements.filter((item) => {
+  useEffect(() => {
+    if (user) {
+      setIsLoading(true);
+      transactionService.getTransactionsByUser(user.uid)
+        .then((data) => setTransactions(data))
+        .catch((err) => console.error("Error fetching transactions:", err))
+        .finally(() => setIsLoading(false));
+    }
+  }, [user]);
+
+  const filteredMovements = transactions.filter((item) => {
     if (activeFilter === "All") return true;
     return item.type.toLowerCase() === activeFilter.toLowerCase();
   });
@@ -58,14 +94,44 @@ export default function History() {
 
       {/* Transactions List */}
       <div className="flex flex-col gap-4">
-        {filteredMovements.map((item) => (
-          <MovementCard 
-            key={item.id} 
-            item={item}
-            onDelete={() => handleDeleteClick(item)}
-            onEdit={() => handleEditClick(item)}
-          />
-        ))}
+        {isLoading && (
+          <div className="text-center py-10 text-slate-500 font-medium animate-pulse">
+            Loading your movements...
+          </div>
+        )}
+        {!isLoading && filteredMovements.length === 0 && (
+          <div className="text-center py-10 text-slate-500 font-medium">
+            No transactions found.
+          </div>
+        )}
+        {!isLoading && filteredMovements.length > 0 && (
+          <>
+            {filteredMovements.map((item) => {
+              const mappedItem = {
+                id: item.id || Math.random().toString(),
+                title: item.category,
+                subtitle: item.note || item.category,
+                time: item.date.toLocaleDateString("id-ID", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                }),
+                amount: formatIDR(item.amount),
+                type: item.type,
+                icon: getCategoryIcon(item.category),
+              };
+
+              return (
+                <MovementCard 
+                  key={mappedItem.id} 
+                  item={mappedItem as any}
+                  onDelete={() => handleDeleteClick(item)}
+                  onEdit={() => handleEditClick(item)}
+                />
+              );
+            })}
+          </>
+        )}
       </div>
 
       {/* Modals */}

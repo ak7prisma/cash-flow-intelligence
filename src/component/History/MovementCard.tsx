@@ -27,7 +27,7 @@ export default function MovementCard({ item, onEdit, onDelete }: Readonly<Moveme
       <div className="relative z-10 flex flex-col gap-3">
         {/* Title & Actions */}
         <div className="flex justify-between items-start">
-          <h3 className="font-bold text-blue-950 dark:text-slate-100 text-lg tracking-tight leading-none">
+          <h3 className="font-bold text-blue-950 dark:text-slate-100 text-lg tracking-tight leading-none capitalize">
             {item.title}
           </h3>
           <div className="flex items-center gap-2 rounded-lg group-hover:opacity-100 transition-opacity duration-300">
@@ -55,7 +55,7 @@ export default function MovementCard({ item, onEdit, onDelete }: Readonly<Moveme
         {/* Detail/Time & Amount */}
         <div className="flex justify-between items-end">
           <div className="flex flex-col gap-0.5">
-            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 capitalize">
               {item.subtitle}
             </span>
             <span className="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider">

@@ -18,7 +18,22 @@ const model = genAI.getGenerativeModel({
 // Model khusus untuk Intent Parsing (Data Extractor)
 const intentModel = genAI.getGenerativeModel({
   model: "gemini-3-flash-preview",
-  systemInstruction: `You are a data extractor. If the user wants to record an income or expense, extract the data into this JSON format: {"isTransaction": true, "amount": number, "type": "income"|"expense", "category": string, "note": string}. If it is NOT a transaction, return {"isTransaction": false}. Return ONLY raw JSON.`,
+  systemInstruction: `Your task is to parse user messages into transaction data. You MUST categorize each transaction into exactly ONE of the allowed categories below. If a transaction doesn't perfectly fit, choose the closest one or use 'Other'/'Others (Income)'. NEVER create your own category names.
+
+Allowed Categories:
+Expense: ['Food & Drink', 'Transport', 'Shopping', 'Bills', 'Health', 'Education', 'Entertainment', 'Other']
+Income: ['Salary', 'Bonus', 'Investment', 'Others (Income)']
+
+Return the response in this JSON format:
+{
+"isTransaction": boolean,
+"amount": number,
+"type": "income" | "expense",
+"category": string (MUST be from the allowed list),
+"note": string
+}
+
+Also, ensure that if the user mentions 'pemasukan', 'gaji', or 'dapat uang', the type is 'income'. Otherwise, the default is 'expense'. Return ONLY raw JSON.`,
 });
 
 export interface TransactionIntent {
@@ -104,10 +119,5 @@ User Message: ${message}
   const result = await model.generateContent(strictPrompt);
   const text = result.response.text().trim();
   const cleaned = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
-  
-  try {
-    return JSON.parse(cleaned);
-  } catch(e) {
-    return { isFinance: true, isAnalysis: false, reply: cleaned };
-  }
+  return JSON.parse(cleaned);
 };

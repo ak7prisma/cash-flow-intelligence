@@ -76,7 +76,7 @@ class TransactionService {
    * Fetches all transactions for a given user, ordered by date descending.
    * Used on the History page.
    */
-  async getAllTransactions(userId: string): Promise<Transaction[]> {
+  async getTransactionsByUser(userId: string): Promise<Transaction[]> {
     const q = query(
       this.getCollectionRef(),
       where("userId", "==", userId),
@@ -91,7 +91,7 @@ class TransactionService {
    * by aggregating all of the user's transactions.
    */
   async getDashboardStats(userId: string): Promise<DashboardStats> {
-    const transactions = await this.getAllTransactions(userId);
+    const transactions = await this.getTransactionsByUser(userId);
 
     const stats = transactions.reduce(
       (acc, tx) => {
