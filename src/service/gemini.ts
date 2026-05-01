@@ -1,11 +1,12 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { Transaction } from "../models/Transaction";
 
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey);
 
 // Konfigurasi Model
 const model = genAI.getGenerativeModel({
-  model: "gemini-3-flash-preview",
+  model: "gemini-3.1-flash-lite-preview",
   systemInstruction: `
     Nama: CFI Assistant.
     Role: Pakar Manajemen Keuangan Pribadi.
@@ -17,7 +18,7 @@ const model = genAI.getGenerativeModel({
 
 // Model khusus untuk Intent Parsing (Data Extractor)
 const intentModel = genAI.getGenerativeModel({
-  model: "gemini-3-flash-preview",
+  model: "gemini-3.1-flash-lite-preview",
   systemInstruction: `Your task is to parse user messages into transaction data. You MUST categorize each transaction into exactly ONE of the allowed categories below. If a transaction doesn't perfectly fit, choose the closest one or use 'Other'/'Others (Income)'. NEVER create your own category names.
 
 Allowed Categories:
@@ -120,4 +121,27 @@ User Message: ${message}
   const text = result.response.text().trim();
   const cleaned = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
   return JSON.parse(cleaned);
+};
+
+export const getDailyAnalytics = async (transactions: Transaction[]): Promise<string> => {
+  const models = ['gemini-3.1-flash-lite-preview', 'gemini-3-flash-preview', 'gemini-2.5-flash-lite-preview'];
+  const prompt = `
+You are a Financial Analyst. Based on the user's recent transactions, provide a very short, insightful financial summary (max 2 sentences). 
+Focus on their biggest expense or income. Respond in Indonesian. Do not use markdown, just plain text.
+
+Transactions: ${JSON.stringify(transactions)}
+`;
+
+  for (const modelName of models) {
+    try {
+      const fallbackModel = genAI.getGenerativeModel({ model: modelName });
+      const result = await fallbackModel.generateContent(prompt);
+      return result.response.text().trim();
+    } catch (error) {
+      console.warn(`Model ${modelName} failed:`, error);
+      continue;
+    }
+  }
+
+  return "Analisis AI sedang beristirahat karena limit server. Silakan cek kembali nanti!";
 };
