@@ -7,15 +7,16 @@ import { type ChatMessage, generateId, getCurrentTime, formatIDR } from "../util
 import TransactionConfirmationBubble from "../component/Assistant/TransactionConfirmationBubble";
 import FinancialAnalysisBubble from "../component/Assistant/FinancialAnalysisBubble";
 import { useChatStore } from "../store/useChatStore";
+import { useTransactionStore } from "../store/useTransactionStore";
 
 export function useAssistantChat(user: any) {
   const { messages, setMessages } = useChatStore();
+  const { addTransaction } = useTransactionStore();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSendMessage = async (text: string) => {
     if (!user) return;
 
-    // Add user message to chat
     const userMessage: ChatMessage = {
       id: generateId(),
       type: "user",
@@ -40,7 +41,11 @@ export function useAssistantChat(user: any) {
           note: intent.note || undefined,
         });
 
-        await transactionService.addTransaction(newTransaction);
+        const docId = await transactionService.addTransaction(newTransaction);
+        
+        // Sync to store
+        newTransaction.id = docId;
+        addTransaction(newTransaction);
 
         const confirmationMessage: ChatMessage = {
           id: generateId(),
