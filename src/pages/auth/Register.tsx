@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthActions } from "../../hooks/useAuthActions";
+import { useAuth } from "../../context/AuthContext";
 import Button from "../../component/ui/Button";
 import Input from "../../component/ui/Input";
 import AuthHeader from "../../component/auth/AuthHeader";
@@ -11,6 +12,13 @@ import SocialAuth from "../../component/auth/SocialAuth";
 export default function Register() {
   const navigate = useNavigate();
   const { register, loginWithGoogle, handleRedirectCallback, loading, error, setError } = useAuthActions();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      navigate("/", { replace: true });
+    }
+  }, [user, navigate]);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -43,7 +51,18 @@ export default function Register() {
   };
 
   const handleGoogleRegister = async () => {
-    await loginWithGoogle();
+    const success = await loginWithGoogle();
+    if (success) {
+      setTimeout(() => {
+        navigate("/", { replace: true });
+        // Fallback if navigate fails
+        setTimeout(() => {
+          if (window.location.pathname.includes('/auth')) {
+            window.location.href = "/";
+          }
+        }, 500);
+      }, 100);
+    }
   };
 
   return (

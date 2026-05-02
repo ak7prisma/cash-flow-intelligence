@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuthActions } from "../../hooks/useAuthActions";
+import { useAuth } from "../../context/AuthContext";
 import { FormContainer } from "../../component/auth/FormContainer";
 import Input from "../../component/ui/Input";
 import Button from "../../component/ui/Button";
@@ -11,6 +12,14 @@ import SocialAuth from "../../component/auth/SocialAuth";
 export default function Login() {
   const navigate = useNavigate();
   const { login, loginWithGoogle, handleRedirectCallback, loading, error } = useAuthActions();
+  const { user } = useAuth();
+
+  // Auto redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate("/", { replace: true });
+    }
+  }, [user, navigate]);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,7 +35,18 @@ export default function Login() {
   };
 
   const handleGoogleLogin = async () => {
-    await loginWithGoogle();
+    const success = await loginWithGoogle();
+    if (success) {
+      setTimeout(() => {
+        navigate("/", { replace: true });
+        // Fallback if navigate fails
+        setTimeout(() => {
+          if (window.location.pathname.includes('/auth')) {
+            window.location.href = "/";
+          }
+        }, 500);
+      }, 100);
+    }
   };
 
   return (

@@ -3,12 +3,21 @@ import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { LuSmartphone, LuSparkles } from "react-icons/lu";
 import { useAuthActions } from "../../hooks/useAuthActions";
+import { useAuth } from "../../context/AuthContext";
 import Button from "../../component/ui/Button";
 import Logo from "../../component/ui/Logo";
 
 export default function Welcome() {
   const navigate = useNavigate();
   const { loginWithGoogle, handleRedirectCallback, loading } = useAuthActions();
+  const { user } = useAuth();
+
+  // Auto redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate("/", { replace: true });
+    }
+  }, [user, navigate]);
 
   // Check for redirect result when page loads
   useEffect(() => {
@@ -16,7 +25,18 @@ export default function Welcome() {
   }, [handleRedirectCallback, navigate]);
 
   const handleGoogleLogin = async () => {
-    await loginWithGoogle();
+    const success = await loginWithGoogle();
+    if (success) {
+      setTimeout(() => {
+        navigate("/", { replace: true });
+        // Fallback if navigate fails
+        setTimeout(() => {
+          if (window.location.pathname.includes('/auth')) {
+            window.location.href = "/";
+          }
+        }, 500);
+      }, 100);
+    }
   };
 
   return (

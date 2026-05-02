@@ -17,8 +17,6 @@ import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, db } from "../service/firebase";
 import { getAuthErrorMessage } from "../data/authMessages";
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
-import { Capacitor } from '@capacitor/core';
-import { AUTH_CONFIG } from '../service/authConfig';
 
 export const useAuthActions = () => {
   const [loading, setLoading] = useState(false);
@@ -73,32 +71,26 @@ export const useAuthActions = () => {
     setLoading(true);
     setError(null);
     try {
-      const isNative = Capacitor.isNativePlatform();
-      
-      // Inisialisasi Google Auth dengan parameter yang tepat
-      await GoogleAuth.initialize({
-        clientId: AUTH_CONFIG.GOOGLE_WEB_CLIENT_ID,
-        // Untuk Android/iOS, serverClientId sangat penting
-        ...(isNative ? { serverClientId: AUTH_CONFIG.GOOGLE_WEB_CLIENT_ID } : {}),
-        scopes: ['profile', 'email'],
-        grantOfflineAccess: true,
-      });
-
+      console.log("Starting Google Sign-In via Plugin...");
       const googleUser = await GoogleAuth.signIn();
       const idToken = googleUser.authentication.idToken;
       
-      console.log("Google Auth Success, ID Token found:", !!idToken);
+      console.log("Google Auth Result found:", !!googleUser);
       
-      if (!idToken) throw new Error("Google Sign-In failed: No ID Token returned.");
+      if (!idToken) {
+        throw new Error("Google login berhasil, tapi ID Token kosong. Pastikan Web Client ID di Firebase Console sudah benar dan sesuai dengan yang ada di capacitor.config.ts.");
+      }
 
+      console.log("Signing in with Firebase Credential...");
       const credential = GoogleAuthProvider.credential(idToken);
       const result = await signInWithCredential(auth, credential);
+      
+      console.log("Firebase Login Success, UID:", result.user.uid);
       await createUserDocument(result.user);
       
       return true;
     } catch (err: any) {
       console.error("CRITICAL: Google Login Error:", err);
-      // Detail error lebih spesifik untuk membantu debugging
       const errorMsg = err.message || (err.code ? getAuthErrorMessage(err.code) : "Unknown Error");
       setError(`Login Gagal: ${errorMsg}`);
       return false;
