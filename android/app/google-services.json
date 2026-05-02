@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1030868000164",
+    "project_id": "cash-flow-intelligence-a7bdb",
+    "storage_bucket": "cash-flow-intelligence-a7bdb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1030868000164:android:742d958c920b34a03a3531",
+        "android_client_info": {
+          "package_name": "vercel.app.ahmadkurniaprisma.cashflowintelliegence"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1030868000164-bis69dbhtsmkm7qa1i38i91oprefke80.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdkAvTSU7ru5_ZYRDZqYp3Jw81qt3QMQU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1030868000164-bis69dbhtsmkm7qa1i38i91oprefke80.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

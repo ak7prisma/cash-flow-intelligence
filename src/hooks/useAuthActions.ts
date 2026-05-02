@@ -73,17 +73,23 @@ export const useAuthActions = () => {
     setLoading(true);
     setError(null);
     try {
-      if (!Capacitor.isNativePlatform()) {
-        GoogleAuth.initialize({
-          clientId: AUTH_CONFIG.GOOGLE_WEB_CLIENT_ID,
-          scopes: ['profile', 'email'],
-          grantOfflineAccess: true,
-        });
-      }
+      const isNative = Capacitor.isNativePlatform();
+      
+      // Inisialisasi Google Auth dengan parameter yang tepat
+      await GoogleAuth.initialize({
+        clientId: AUTH_CONFIG.GOOGLE_WEB_CLIENT_ID,
+        // Untuk Android/iOS, serverClientId sangat penting
+        ...(isNative ? { serverClientId: AUTH_CONFIG.GOOGLE_WEB_CLIENT_ID } : {}),
+        scopes: ['profile', 'email'],
+        grantOfflineAccess: true,
+      });
 
       const googleUser = await GoogleAuth.signIn();
       const idToken = googleUser.authentication.idToken;
-      if (!idToken) throw new Error("Google Sign-In failed: no idToken.");
+      
+      console.log("Google Auth Success, ID Token found:", !!idToken);
+      
+      if (!idToken) throw new Error("Google Sign-In failed: No ID Token returned.");
 
       const credential = GoogleAuthProvider.credential(idToken);
       const result = await signInWithCredential(auth, credential);
@@ -91,10 +97,13 @@ export const useAuthActions = () => {
       
       return true;
     } catch (err: any) {
-      console.error("Error during Google Login:", err);
-      setError(err.message || getAuthErrorMessage(err.code));
-      setLoading(false);
+      console.error("CRITICAL: Google Login Error:", err);
+      // Detail error lebih spesifik untuk membantu debugging
+      const errorMsg = err.message || (err.code ? getAuthErrorMessage(err.code) : "Unknown Error");
+      setError(`Login Gagal: ${errorMsg}`);
       return false;
+    } finally {
+      setLoading(false);
     }
   };
 
