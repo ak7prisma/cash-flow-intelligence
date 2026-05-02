@@ -16,7 +16,7 @@ export const settingData = [
       to: "/profile/dailyremind",
       icon: TbBellRinging ,
       title: "Daily Reminder",
-      subtitle: "Set to 08:00.",
+      subtitle: "Set your daily reminder.",
     },
     {
       id: 3,
