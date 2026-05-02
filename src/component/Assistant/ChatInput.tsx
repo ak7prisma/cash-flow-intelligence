@@ -8,7 +8,7 @@ interface ChatInputProps {
 }
 
 // Support for Web Speech API
-const SpeechRecognition = globalThis.SpeechRecognition || globalThis.webkitSpeechRecognition;
+const SpeechRecognition = (globalThis as any).SpeechRecognition || (globalThis as any).webkitSpeechRecognition;
 
 export default function ChatInput({ onSend, disabled = false }: Readonly<ChatInputProps>) {
   const [input, setInput] = useState("");
