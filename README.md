@@ -1,75 +1,51 @@
-# React + TypeScript + Vite
+# Cash Flow Intelligence (CFI)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Application for managing personal finances with AI-powered assistance.
 
-Currently, two official plugins are available:
+## 🚀 Features
+- **AI Chatbot**: Log transactions via voice or text using Gemini AI.
+- **Smart Dashboard**: Real-time financial insights and trend charts.
+- **Transaction History**: Edit and delete records with instant sync.
+- **Native Experience**: Fully functional on Android via Capacitor.
+- **Premium UI**: Dark mode support with Framer Motion animations.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 📁 Project Structure
 
-## React Compiler
-
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
-
-Note: This will impact Vite dev & build performances.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```text
+src/
+├── component/          # UI Components (Atomic, Molecules, Organisms)
+│   ├── Assistant/      # Chat-related UI elements
+│   ├── Dashboard/      # Summary and Chart components
+│   ├── auth/           # Authentication forms and layouts
+│   └── ui/             # Reusable base components (Buttons, Inputs)
+├── context/            # React Context (Auth State management)
+├── data/               # Static data and Constants
+├── hooks/              # Custom React Hooks (Business Logic)
+├── layout/             # Page Layout wrappers
+├── models/             # OOP Data Models (Classes)
+├── pages/              # Main Page components
+├── service/            # External Services (Firebase, Gemini AI)
+├── store/              # Zustand Store (Global State)
+└── utils/              # Helper & Utility functions
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🧪 Unit Testing Implementation
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+The project uses **Vitest** for automated unit testing, focusing on core business logic and utility functions to ensure data integrity.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Key Test Suites:
+1. **Transaction Model**: Validates OOP principles, amount formatting (IDR), and JSON serialization.
+2. **Assistant Helpers**: Validates chat ID generation, time formatting, and currency display logic.
+
+To run the tests:
+```bash
+npm test
 ```
+
+## 🛠️ Tech Stack
+- **Frontend**: React + TypeScript + Vite
+- **Styling**: Tailwind CSS + Framer Motion
+- **Backend**: Firebase (Auth & Firestore)
+- **AI**: Gemini AI API
+- **State**: Zustand
+- **Native**: Capacitor (Android)
