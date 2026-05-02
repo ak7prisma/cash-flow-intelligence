@@ -8,7 +8,6 @@ export const setupDailyNotification = async (time: string = '19:00', enabled: bo
   }
 
   try {
-    // 1. Selalu bersihkan jadwal lama agar tidak duplikat
     await LocalNotifications.cancel({ notifications: [{ id: 1 }] });
 
     if (!enabled) {
@@ -16,7 +15,6 @@ export const setupDailyNotification = async (time: string = '19:00', enabled: bo
       return;
     }
 
-    // 2. Cek & Request Permission
     let permStatus = await LocalNotifications.checkPermissions();
     if (permStatus.display === 'prompt' || permStatus.display === 'denied') {
       permStatus = await LocalNotifications.requestPermissions();
@@ -27,30 +25,47 @@ export const setupDailyNotification = async (time: string = '19:00', enabled: bo
       return;
     }
 
-    // 3. Parse waktu (format HH:mm)
-    const [hour, minute] = time.split(':').map(Number);
+    if (Capacitor.getPlatform() === 'android') {
+      await LocalNotifications.createChannel({
+        id: 'daily-reminders',
+        name: 'Daily Reminders',
+        importance: 5,
+        description: 'Daily transaction reminders',
+        sound: 'beep.wav',
+        visibility: 1,
+      });
+    }
 
-    // 4. Jadwalkan
+    const [hour, minute] = time.split(':').map(Number);
+    const validHour = isNaN(hour) ? 19 : hour;
+    const validMinute = isNaN(minute) ? 0 : minute;
+
+    const now = new Date();
+    const scheduleDate = new Date();
+    scheduleDate.setHours(validHour, validMinute, 0, 0);
+
+    if (scheduleDate <= now) {
+      scheduleDate.setDate(scheduleDate.getDate() + 1);
+    }
+
     await LocalNotifications.schedule({
       notifications: [
         {
           id: 1,
           title: "Waktunya Catat Keuangan! 💸",
           body: "Sudah catat pengeluaran dan pemasukanmu hari ini? Yuk catat sekarang di Cashflow AI.",
+          channelId: 'daily-reminders',
           schedule: {
-            on: {
-              hour: hour || 19,
-              minute: minute || 0,
-            },
+            at: scheduleDate,
             repeats: true,
+            every: 'day',
             allowWhileIdle: true,
           },
-          smallIcon: "ic_stat_icon_config_sample",
         },
       ],
     });
 
-    console.log(`Daily notification scheduled for ${time}.`);
+    console.log(`Daily notification scheduled for ${scheduleDate.toString()}.`);
   } catch (error) {
     console.error("Gagal mengatur notifikasi:", error);
   }

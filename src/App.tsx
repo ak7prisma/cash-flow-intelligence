@@ -45,7 +45,7 @@ function AppContent() {
 
   useEffect(() => {
     setupDailyNotification(notifTime, notifEnabled);
-  }, []);
+  }, [notifTime, notifEnabled]);
 
   const showSplash = !isAnimationDone;
 
