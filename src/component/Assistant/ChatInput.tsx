@@ -1,60 +1,117 @@
 import { useState, useRef, useEffect } from "react";
 import { RiMicLine, RiSendPlane2Line, RiStopCircleLine } from "react-icons/ri";
 import { motion, AnimatePresence } from "framer-motion";
+import { Capacitor } from "@capacitor/core";
+import { SpeechRecognition as CapSpeech } from "@capacitor-community/speech-recognition";
 
 interface ChatInputProps {
   onSend?: (message: string) => void;
   disabled?: boolean;
 }
 
-// Support for Web Speech API
-const SpeechRecognition = (globalThis as any).SpeechRecognition || (globalThis as any).webkitSpeechRecognition;
+// Support for Web Speech API fallback
+const WebSpeechRecognition = (globalThis as any).SpeechRecognition || (globalThis as any).webkitSpeechRecognition;
 
 export default function ChatInput({ onSend, disabled = false }: Readonly<ChatInputProps>) {
   const [input, setInput] = useState("");
   const [isListening, setIsListening] = useState(false);
-  const recognitionRef = useRef<any>(null);
+  const webRecognitionRef = useRef<any>(null);
 
   useEffect(() => {
-    if (SpeechRecognition) {
-      const recognition = new SpeechRecognition();
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.lang = "id-ID";
+    const isNative = Capacitor.isNativePlatform();
 
-      recognition.onresult = (event: any) => {
-        let transcript = "";
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          transcript += event.results[i][0].transcript;
-        }
-        setInput(transcript);
+    if (isNative) {
+      // Capacitor Native Listener
+      const setupNativeListener = async () => {
+        return await CapSpeech.addListener('partialResults', (data: any) => {
+          if (data.matches && data.matches.length > 0) {
+            setInput(data.matches[0]);
+          }
+        });
       };
+      
+      let listenerHandle: any;
+      setupNativeListener().then(handle => listenerHandle = handle);
 
-      recognition.onerror = (event: any) => {
-        console.error("Speech recognition error", event.error);
-        setIsListening(false);
+      return () => {
+        if (listenerHandle) listenerHandle.remove();
+        CapSpeech.stop().catch(() => {});
       };
+    } else {
+      // Web Speech API initialization
+      if (WebSpeechRecognition) {
+        const recognition = new WebSpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = "id-ID";
 
-      recognition.onend = () => {
-        setIsListening(false);
-      };
+        recognition.onresult = (event: any) => {
+          let transcript = "";
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            transcript += event.results[i][0].transcript;
+          }
+          setInput(transcript);
+        };
 
-      recognitionRef.current = recognition;
+        recognition.onerror = (event: any) => {
+          console.error("Speech recognition error", event.error);
+          setIsListening(false);
+        };
+
+        recognition.onend = () => {
+          setIsListening(false);
+        };
+
+        webRecognitionRef.current = recognition;
+      }
     }
   }, []);
 
-  const toggleListening = () => {
-    if (!SpeechRecognition) {
-      alert("Speech recognition is not supported in this browser/device.");
-      return;
-    }
+  const toggleListening = async () => {
+    const isNative = Capacitor.isNativePlatform();
 
-    if (isListening) {
-      recognitionRef.current?.stop();
+    if (isNative) {
+      try {
+        if (isListening) {
+          await CapSpeech.stop();
+          setIsListening(false);
+        } else {
+          // Check and request permissions
+          const permStatus = await CapSpeech.checkPermissions();
+          if (permStatus.speechRecognition !== 'granted') {
+            const request = await CapSpeech.requestPermissions();
+            if (request.speechRecognition !== 'granted') {
+              alert("Microphone permission denied.");
+              return;
+            }
+          }
+
+          setInput("");
+          await CapSpeech.start({
+            language: "id-ID",
+            partialResults: true,
+            popup: false,
+          });
+          setIsListening(true);
+        }
+      } catch (error) {
+        console.error("Native Speech Error:", error);
+        setIsListening(false);
+      }
     } else {
-      setInput("");
-      recognitionRef.current?.start();
-      setIsListening(true);
+      // Web Fallback
+      if (!WebSpeechRecognition) {
+        alert("Speech recognition is not supported in this browser/device.");
+        return;
+      }
+
+      if (isListening) {
+        webRecognitionRef.current?.stop();
+      } else {
+        setInput("");
+        webRecognitionRef.current?.start();
+        setIsListening(true);
+      }
     }
   };
 
@@ -63,8 +120,14 @@ export default function ChatInput({ onSend, disabled = false }: Readonly<ChatInp
     if (!trimmed || disabled) return;
     onSend?.(trimmed);
     setInput("");
+    
     if (isListening) {
-      recognitionRef.current?.stop();
+      if (Capacitor.isNativePlatform()) {
+        CapSpeech.stop().catch(() => {});
+        setIsListening(false);
+      } else {
+        webRecognitionRef.current?.stop();
+      }
     }
   };
 

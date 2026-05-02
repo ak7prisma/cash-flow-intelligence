@@ -17,6 +17,8 @@ import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, db } from "../service/firebase";
 import { getAuthErrorMessage } from "../data/authMessages";
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+import { AUTH_CONFIG } from "../service/authConfig";
+import { Capacitor } from "@capacitor/core";
 
 export const useAuthActions = () => {
   const [loading, setLoading] = useState(false);
@@ -71,6 +73,15 @@ export const useAuthActions = () => {
     setLoading(true);
     setError(null);
     try {
+      const isNative = Capacitor.isNativePlatform();
+      
+      console.log("Initializing Google Auth...");
+      await GoogleAuth.initialize({
+        clientId: AUTH_CONFIG.GOOGLE_WEB_CLIENT_ID,
+        ...(isNative ? { serverClientId: AUTH_CONFIG.GOOGLE_WEB_CLIENT_ID } : {}),
+        scopes: ['profile', 'email'],
+      });
+
       console.log("Starting Google Sign-In via Plugin...");
       const googleUser = await GoogleAuth.signIn();
       const idToken = googleUser.authentication.idToken;
