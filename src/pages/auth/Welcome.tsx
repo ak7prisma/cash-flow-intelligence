@@ -1,53 +1,32 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FcGoogle } from "react-icons/fc";
 import { LuSmartphone, LuSparkles } from "react-icons/lu";
-import { useAuthActions } from "../../hooks/useAuthActions";
+import { FcGoogle } from "react-icons/fc";
+import { useGoogleAuth } from "../../hooks/useGoogleAuth";
 import { useAuth } from "../../context/AuthContext";
 import Button from "../../component/ui/Button";
 import Logo from "../../component/ui/Logo";
 
 export default function Welcome() {
   const navigate = useNavigate();
-  const { loginWithGoogle, handleRedirectCallback, loading } = useAuthActions();
+  const { handleGoogleLogin, handleRedirectCallback, loading } = useGoogleAuth();
   const { user } = useAuth();
 
-  // Auto redirect if already logged in
   useEffect(() => {
-    if (user) {
-      navigate("/", { replace: true });
-    }
+    if (user) navigate("/", { replace: true });
   }, [user, navigate]);
 
-  // Check for redirect result when page loads
   useEffect(() => {
     handleRedirectCallback(() => navigate("/"));
   }, [handleRedirectCallback, navigate]);
 
-  const handleGoogleLogin = async () => {
-    const success = await loginWithGoogle();
-    if (success) {
-      setTimeout(() => {
-        navigate("/", { replace: true });
-        // Fallback if navigate fails
-        setTimeout(() => {
-          if (window.location.pathname.includes('/auth')) {
-            window.location.href = "/";
-          }
-        }, 500);
-      }, 100);
-    }
-  };
-
   return (
     <div className="flex flex-col justify-between gap-25 items-center text-center animate-in fade-in slide-in-from-bottom-8">
-
       {/* Logo */}
       <Logo className="mt-4" />
 
       {/* Hero */}
       <div className="relative w-full flex flex-col items-center justify-center">
-
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
           <span className="text-[150px] font-bold tracking-tighter text-slate-900/5 dark:text-white/5 leading-none -translate-y-4">
             2026
@@ -98,7 +77,6 @@ export default function Welcome() {
           </p>
         </div>
       </div>
-
     </div>
   );
 }

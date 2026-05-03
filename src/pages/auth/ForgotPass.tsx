@@ -6,6 +6,7 @@ import Input from "../../component/ui/Input";
 import AuthHeader from "../../component/auth/AuthHeader";
 import AuthCard from "../../component/auth/AuthCard";
 import { FormContainer } from "../../component/auth/FormContainer";
+import AlertBanner from "../../component/ui/AlertBanner";
 
 export default function ForgotPass() {
   const { resetPasswordEmail, loading, error, setError } = useAuthActions();
@@ -24,9 +25,9 @@ export default function ForgotPass() {
 
   return (
     <div className="flex flex-col items-center justify-center animate-in fade-in duration-700">
-      <AuthHeader 
-        title="FORGOT PASSWORD" 
-        subtitle="ENTER YOUR ACTIVE EMAIL ACCOUNT" 
+      <AuthHeader
+        title="FORGOT PASSWORD"
+        subtitle="ENTER YOUR ACTIVE EMAIL ACCOUNT"
       />
 
       <AuthCard
@@ -60,7 +61,7 @@ export default function ForgotPass() {
 
             <p className="text-xs text-slate-400 dark:text-slate-500">
               Didn't receive the email? Check your spam folder or{" "}
-              <button 
+              <button
                 onClick={() => { setSuccess(false); setEmail(""); }}
                 className="text-teal-800 dark:text-cyan-400 font-bold hover:underline"
               >
@@ -71,16 +72,12 @@ export default function ForgotPass() {
         ) : (
           <FormContainer onSubmit={handleResetEmail}>
             <div className="space-y-6">
-              {error && (
-                <div className="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs font-medium tracking-wide animate-in fade-in slide-in-from-top-2 duration-300">
-                  {error}
-                </div>
-              )}
+              <AlertBanner message={error} />
 
-              <Input 
-                label="Email Address" 
-                type="email" 
-                placeholder="name@company.com" 
+              <Input
+                label="Email Address"
+                type="email"
+                placeholder="name@company.com"
                 className="text-slate-900 dark:text-slate-300"
                 inputClassName="order-none text-sm placeholder:text-slate-400"
                 value={email}
@@ -88,7 +85,7 @@ export default function ForgotPass() {
                 disabled={loading}
               />
 
-              <Button 
+              <Button
                 text={loading ? "Sending..." : "Continue"}
                 type="submit"
                 disabled={loading}

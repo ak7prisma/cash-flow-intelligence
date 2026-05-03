@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuthActions } from "../../hooks/useAuthActions";
+import { useGoogleAuth } from "../../hooks/useGoogleAuth";
 import { useAuth } from "../../context/AuthContext";
 import Button from "../../component/ui/Button";
 import Input from "../../component/ui/Input";
@@ -8,24 +8,22 @@ import AuthHeader from "../../component/auth/AuthHeader";
 import AuthCard from "../../component/auth/AuthCard";
 import { FormContainer } from "../../component/auth/FormContainer";
 import SocialAuth from "../../component/auth/SocialAuth";
+import AlertBanner from "../../component/ui/AlertBanner";
 
 export default function Register() {
   const navigate = useNavigate();
-  const { register, loginWithGoogle, handleRedirectCallback, loading, error, setError } = useAuthActions();
+  const { register, handleRedirectCallback, handleGoogleLogin, loading, error, setError } = useGoogleAuth();
   const { user } = useAuth();
-
-  useEffect(() => {
-    if (user) {
-      navigate("/", { replace: true });
-    }
-  }, [user, navigate]);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [agreed, setAgreed] = useState(false);
 
-  // Check for redirect result when page loads
+  useEffect(() => {
+    if (user) navigate("/", { replace: true });
+  }, [user, navigate]);
+
   useEffect(() => {
     handleRedirectCallback(() => navigate("/"));
   }, [handleRedirectCallback, navigate]);
@@ -50,26 +48,11 @@ export default function Register() {
     if (success) navigate("/");
   };
 
-  const handleGoogleRegister = async () => {
-    const success = await loginWithGoogle();
-    if (success) {
-      setTimeout(() => {
-        navigate("/", { replace: true });
-        // Fallback if navigate fails
-        setTimeout(() => {
-          if (window.location.pathname.includes('/auth')) {
-            window.location.href = "/";
-          }
-        }, 500);
-      }, 100);
-    }
-  };
-
   return (
     <div className="flex flex-col items-center justify-center animate-in fade-in duration-700">
-      <AuthHeader 
-        title="CREATE ACCOUNT" 
-        subtitle="JOIN THE ECOSYSTEM OF ELITE FINANCE" 
+      <AuthHeader
+        title="CREATE ACCOUNT"
+        subtitle="JOIN THE ECOSYSTEM OF ELITE FINANCE"
       />
 
       <AuthCard
@@ -84,15 +67,11 @@ export default function Register() {
       >
         <FormContainer onSubmit={handleRegister}>
           <div className="space-y-4">
-            {error && (
-              <div className="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs font-medium tracking-wide animate-in fade-in slide-in-from-top-2 duration-300">
-                {error}
-              </div>
-            )}
+            <AlertBanner message={error} />
 
-            <Input 
-              label="Email Address" 
-              type="email" 
+            <Input
+              label="Email Address"
+              type="email"
               placeholder="name@company.com"
               className="text-slate-900 dark:text-slate-300"
               inputClassName="order-none text-sm placeholder:text-slate-400"
@@ -100,10 +79,10 @@ export default function Register() {
               onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
             />
-            
-            <Input 
-              label="Password" 
-              type="password" 
+
+            <Input
+              label="Password"
+              type="password"
               placeholder="123asd!@#"
               className="text-slate-900 dark:text-slate-300"
               inputClassName="order-none text-sm placeholder:text-slate-400"
@@ -113,9 +92,9 @@ export default function Register() {
               disabled={loading}
             />
 
-            <Input 
-              label="Confirm Password" 
-              type="password" 
+            <Input
+              label="Confirm Password"
+              type="password"
               placeholder="••••••••••••"
               className="text-slate-900 dark:text-slate-300"
               inputClassName="order-none text-sm placeholder:text-slate-400"
@@ -125,12 +104,12 @@ export default function Register() {
             />
 
             <div className="flex items-start gap-3">
-              <input 
-                type="checkbox" 
+              <input
+                type="checkbox"
                 checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
                 disabled={loading}
-                className="mt-1 w-4 h-4 rounded-3xl dark:bg-slate-900 accent-teal-800 dark:accent-cyan-400  cursor-pointer" 
+                className="mt-1 w-4 h-4 rounded-3xl dark:bg-slate-900 accent-teal-800 dark:accent-cyan-400  cursor-pointer"
               />
               <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 leading-relaxed tracking-wide">
                 I agree to the{" "}
@@ -146,16 +125,16 @@ export default function Register() {
           </div>
 
           <div className="space-y-4">
-            <Button 
+            <Button
               text={loading ? "Processing..." : "Register"}
               type="submit"
               disabled={loading}
               className="h-16 shadow-lg shadow-teal-900/20 dark:shadow-cyan-400/20"
             />
 
-            <SocialAuth 
-              onGoogleClick={handleGoogleRegister} 
-              loading={loading} 
+            <SocialAuth
+              onGoogleClick={handleGoogleLogin}
+              loading={loading}
             />
           </div>
         </FormContainer>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuthActions } from "../../hooks/useAuthActions";
+import { useGoogleAuth } from "../../hooks/useGoogleAuth";
 import { useAuth } from "../../context/AuthContext";
 import { FormContainer } from "../../component/auth/FormContainer";
 import Input from "../../component/ui/Input";
@@ -8,23 +8,20 @@ import Button from "../../component/ui/Button";
 import AuthHeader from "../../component/auth/AuthHeader";
 import AuthCard from "../../component/auth/AuthCard";
 import SocialAuth from "../../component/auth/SocialAuth";
+import AlertBanner from "../../component/ui/AlertBanner";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login, loginWithGoogle, handleRedirectCallback, loading, error } = useAuthActions();
+  const { login, handleRedirectCallback, handleGoogleLogin, loading, error } = useGoogleAuth();
   const { user } = useAuth();
-
-  // Auto redirect if already logged in
-  useEffect(() => {
-    if (user) {
-      navigate("/", { replace: true });
-    }
-  }, [user, navigate]);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // Check for redirect result when page loads
+  useEffect(() => {
+    if (user) navigate("/", { replace: true });
+  }, [user, navigate]);
+
   useEffect(() => {
     handleRedirectCallback(() => navigate("/"));
   }, [handleRedirectCallback, navigate]);
@@ -34,26 +31,11 @@ export default function Login() {
     if (success) navigate("/");
   };
 
-  const handleGoogleLogin = async () => {
-    const success = await loginWithGoogle();
-    if (success) {
-      setTimeout(() => {
-        navigate("/", { replace: true });
-        // Fallback if navigate fails
-        setTimeout(() => {
-          if (window.location.pathname.includes('/auth')) {
-            window.location.href = "/";
-          }
-        }, 500);
-      }, 100);
-    }
-  };
-
   return (
     <div className="flex flex-col items-center justify-center animate-in fade-in duration-700">
-      <AuthHeader 
-        title="WELCOME BACK!" 
-        subtitle="ACCESS YOUR INTELLIGENCE DASHBOARD" 
+      <AuthHeader
+        title="WELCOME BACK!"
+        subtitle="ACCESS YOUR INTELLIGENCE DASHBOARD"
       />
 
       <AuthCard
@@ -68,27 +50,23 @@ export default function Login() {
       >
         <FormContainer onSubmit={handleEmailLogin}>
           <div className="space-y-4 text-left">
-            {error && (
-              <div className="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs font-medium tracking-wide animate-in fade-in slide-in-from-top-2 duration-300">
-                {error}
-              </div>
-            )}
+            <AlertBanner message={error} />
 
-            <Input 
-              label="Email Address" 
-              type="email" 
-              placeholder="name@company.com" 
+            <Input
+              label="Email Address"
+              type="email"
+              placeholder="name@company.com"
               className="text-slate-900 dark:text-slate-300"
               inputClassName="order-none text-sm placeholder:text-slate-400"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
             />
-            
-            <Input 
-              label="Password" 
-              type="password" 
-              placeholder="••••••••••••" 
+
+            <Input
+              label="Password"
+              type="password"
+              placeholder="••••••••••••"
               className="text-slate-900 dark:text-slate-300"
               inputClassName="order-none text-sm"
               value={password}
@@ -103,7 +81,7 @@ export default function Login() {
           </div>
 
           <div className="space-y-4">
-            <Button 
+            <Button
               text={loading ? "Processing..." : "Continue"}
               variant="primary"
               type="submit"
@@ -111,9 +89,9 @@ export default function Login() {
               className="h-16 shadow-lg shadow-teal-900/20 dark:shadow-cyan-400/20"
             />
 
-            <SocialAuth 
-              onGoogleClick={handleGoogleLogin} 
-              loading={loading} 
+            <SocialAuth
+              onGoogleClick={handleGoogleLogin}
+              loading={loading}
             />
           </div>
         </FormContainer>

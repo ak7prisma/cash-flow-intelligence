@@ -6,11 +6,12 @@ import Input from "../../component/ui/Input";
 import AuthHeader from "../../component/auth/AuthHeader";
 import AuthCard from "../../component/auth/AuthCard";
 import { FormContainer } from "../../component/auth/FormContainer";
+import AlertBanner from "../../component/ui/AlertBanner";
 
 export default function ResetPass() {
   const [searchParams] = useSearchParams();
   const oobCode = searchParams.get("oobCode") || "";
-  
+
   const { finalizePasswordReset, loading, error, setError } = useAuthActions();
 
   const [newPassword, setNewPassword] = useState("");
@@ -39,9 +40,9 @@ export default function ResetPass() {
 
   return (
     <div className="flex flex-col items-center justify-center animate-in fade-in duration-700">
-      <AuthHeader 
-        title="RESET PASSWORD" 
-        subtitle="ENTER YOUR NEW PASSWORD, DON'T FORGET IT AGAIN!" 
+      <AuthHeader
+        title="RESET PASSWORD"
+        subtitle="ENTER YOUR NEW PASSWORD, DON'T FORGET IT AGAIN!"
       />
 
       <AuthCard
@@ -71,7 +72,7 @@ export default function ResetPass() {
               </p>
             </div>
 
-            <Button 
+            <Button
               text="Back to Login"
               variant="primary"
               to="/auth/Login"
@@ -81,16 +82,12 @@ export default function ResetPass() {
         ) : (
           <FormContainer onSubmit={handleResetPassword}>
             <div className="space-y-4">
-              {error && (
-                <div className="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs font-medium tracking-wide animate-in fade-in slide-in-from-top-2 duration-300">
-                  {error}
-                </div>
-              )}
+              <AlertBanner message={error} />
 
-              <Input 
-                label="New Password" 
-                type="password" 
-                placeholder="••••••••••••" 
+              <Input
+                label="New Password"
+                type="password"
+                placeholder="••••••••••••"
                 hint="Use 8+ characters with a mix of letters, numbers &amp; symbols."
                 className="text-slate-900 dark:text-slate-300"
                 inputClassName="order-none text-sm placeholder:text-slate-400"
@@ -98,10 +95,10 @@ export default function ResetPass() {
                 onChange={(e) => setNewPassword(e.target.value)}
                 disabled={loading}
               />
-              
-              <Input 
-                label="Confirm Password" 
-                type="password" 
+
+              <Input
+                label="Confirm Password"
+                type="password"
                 placeholder="••••••••••••"
                 className="text-slate-900 dark:text-slate-300"
                 inputClassName="order-none text-sm placeholder:text-slate-400"
@@ -110,7 +107,7 @@ export default function ResetPass() {
                 disabled={loading}
               />
 
-              <Button 
+              <Button
                 text={loading ? "Resetting..." : "Continue"}
                 type="submit"
                 disabled={loading}
