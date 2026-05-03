@@ -1,4 +1,4 @@
-export const CATEGORIES = [
+export const EXPENSE_CATEGORIES = [
   "Other",
   "Food & Beverage",
   "Transportation",
@@ -7,8 +7,17 @@ export const CATEGORIES = [
   "Education",
   "Shopping",
   "Bill",
+] as const;
+
+export const INCOME_CATEGORIES = [
   "Others (Income)",
   "Salary",
   "Bonus",
-  "Investment"
-];
+  "Investment",
+] as const;
+
+export const CATEGORIES = [...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES];
+
+export type ExpenseCategory = (typeof EXPENSE_CATEGORIES)[number];
+export type IncomeCategory = (typeof INCOME_CATEGORIES)[number];
+export type TransactionCategory = (typeof CATEGORIES)[number];

@@ -27,41 +27,43 @@ export function useAssistantChat(user: any) {
     setIsLoading(true);
 
     try {
-      // Step 1: Intent Parsing
+      // Intent Parsing
       const intent = await parseTransactionIntent(text);
 
       if (intent.isTransaction) {
-        // Step 2A: Transaction Recording
-        const newTransaction = new Transaction({
-          userId: user.uid,
-          amount: intent.amount,
-          type: intent.type,
-          category: intent.category,
-          date: new Date(),
-          note: intent.note || undefined,
-        });
+        // Transaction Recording
+        for (const txData of intent.transactions) {
+          const newTransaction = new Transaction({
+            userId: user.uid,
+            amount: txData.amount,
+            type: txData.type,
+            category: txData.category,
+            date: new Date(txData.date),
+            note: txData.note || undefined,
+          });
 
-        const docId = await transactionService.addTransaction(newTransaction);
-        
-        // Sync to store
-        newTransaction.id = docId;
-        addTransaction(newTransaction);
+          const docId = await transactionService.addTransaction(newTransaction);
+          
+          // Sync to store
+          newTransaction.id = docId;
+          addTransaction(newTransaction);
 
-        const confirmationMessage: ChatMessage = {
-          id: generateId(),
-          type: "bot",
-          time: getCurrentTime(),
-          message: (
-            <TransactionConfirmationBubble
-              type={intent.type}
-              amountFormatted={formatIDR(intent.amount)}
-              category={intent.category}
-              note={intent.note}
-            />
-          ),
-        };
+          const confirmationMessage: ChatMessage = {
+            id: generateId(),
+            type: "bot",
+            time: getCurrentTime(),
+            message: (
+              <TransactionConfirmationBubble
+                type={txData.type}
+                amountFormatted={formatIDR(txData.amount)}
+                category={txData.category}
+                note={txData.note}
+              />
+            ),
+          };
 
-        setMessages((prev) => [...prev, confirmationMessage]);
+          setMessages((prev) => [...prev, confirmationMessage]);
+        }
       } else {
         const stats = await transactionService.getDashboardStats(user.uid);
         const recentTxs = await transactionService.getRecentTransactions(user.uid, 5);
@@ -83,7 +85,7 @@ export function useAssistantChat(user: any) {
         if (geminiReply.isFinance && geminiReply.isAnalysis) {
           botMessageContent = <FinancialAnalysisBubble reply={geminiReply} />;
         } else {
-          // If it's a general reply or non-finance refusal
+
           botMessageContent = (geminiReply as any).reply;
         }
 
