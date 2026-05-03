@@ -48,7 +48,7 @@ export default function RecentMove({ transactions }: { readonly transactions: Tr
                     ? "text-teal-700 dark:text-cyan-400" 
                     : "text-blue-950 dark:text-red-400"
                 }`}>
-                  {formatIDR(item.amount)}
+                  {item.getFormattedAmount ? item.getFormattedAmount() : formatIDR(item.amount)}
                 </div>
               </div>
             );

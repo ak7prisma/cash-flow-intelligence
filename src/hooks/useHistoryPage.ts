@@ -4,6 +4,7 @@ import { useTransactionStore } from "../store/useTransactionStore";
 import { transactionService } from "../service/TransactionService";
 import { formatIDR } from "../utils/assistantHelpers";
 import { getCategoryIcon } from "../utils/categoryIcons";
+import { IncomeTransaction, ExpenseTransaction } from "../models/Transaction";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -27,7 +28,7 @@ function mapTransaction(item: any): MappedMovement {
       month: "short",
       year: "numeric",
     }),
-    amount: formatIDR(item.amount),
+    amount: item.getFormattedAmount ? item.getFormattedAmount() : formatIDR(item.amount),
     type: item.type,
     icon: getCategoryIcon(item.category),
   };
@@ -92,9 +93,15 @@ export function useHistoryPage() {
     const { id, ...payloadWithoutId } = updatedData;
 
     setTransactions(
-      transactions.map((tx) =>
-        tx.id === idToUpdate ? { ...tx, ...payloadWithoutId } : tx
-      )
+      transactions.map((tx) => {
+        if (tx.id === idToUpdate) {
+          const newData = { ...tx, ...payloadWithoutId };
+          return newData.type === 'income' 
+            ? new IncomeTransaction(newData)
+            : new ExpenseTransaction(newData);
+        }
+        return tx;
+      })
     );
     setIsEditOpen(false);
 
