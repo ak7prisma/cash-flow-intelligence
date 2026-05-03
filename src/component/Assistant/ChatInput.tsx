@@ -1,134 +1,29 @@
-import { useState, useRef, useEffect } from "react";
 import { RiMicLine, RiSendPlane2Line, RiStopCircleLine } from "react-icons/ri";
 import { motion, AnimatePresence } from "framer-motion";
-import { Capacitor } from "@capacitor/core";
-import { SpeechRecognition as CapSpeech } from "@capacitor-community/speech-recognition";
+import { useSpeechRecognition } from "../../hooks/useSpeechRecognition";
 
 interface ChatInputProps {
   onSend?: (message: string) => void;
   disabled?: boolean;
 }
 
-// Support for Web Speech API fallback
-const WebSpeechRecognition = (globalThis as any).SpeechRecognition || (globalThis as any).webkitSpeechRecognition;
-
 export default function ChatInput({ onSend, disabled = false }: Readonly<ChatInputProps>) {
-  const [input, setInput] = useState("");
-  const [isListening, setIsListening] = useState(false);
-  const webRecognitionRef = useRef<any>(null);
-
-  useEffect(() => {
-    const isNative = Capacitor.isNativePlatform();
-
-    if (isNative) {
-      // Capacitor Native Listener
-      const setupNativeListener = async () => {
-        return await CapSpeech.addListener('partialResults', (data: any) => {
-          if (data.matches && data.matches.length > 0) {
-            setInput(data.matches[0]);
-          }
-        });
-      };
-      
-      let listenerHandle: any;
-      setupNativeListener().then(handle => listenerHandle = handle);
-
-      return () => {
-        if (listenerHandle) listenerHandle.remove();
-        CapSpeech.stop().catch(() => {});
-      };
-    } else {
-      // Web Speech API initialization
-      if (WebSpeechRecognition) {
-        const recognition = new WebSpeechRecognition();
-        recognition.continuous = true;
-        recognition.interimResults = true;
-        recognition.lang = "id-ID";
-
-        recognition.onresult = (event: any) => {
-          let transcript = "";
-          for (let i = event.resultIndex; i < event.results.length; i++) {
-            transcript += event.results[i][0].transcript;
-          }
-          setInput(transcript);
-        };
-
-        recognition.onerror = (event: any) => {
-          console.error("Speech recognition error", event.error);
-          setIsListening(false);
-        };
-
-        recognition.onend = () => {
-          setIsListening(false);
-        };
-
-        webRecognitionRef.current = recognition;
-      }
-    }
-  }, []);
-
-  const toggleListening = async () => {
-    const isNative = Capacitor.isNativePlatform();
-
-    if (isNative) {
-      try {
-        if (isListening) {
-          await CapSpeech.stop();
-          setIsListening(false);
-        } else {
-          // Check and request permissions
-          const permStatus = await CapSpeech.checkPermissions();
-          if (permStatus.speechRecognition !== 'granted') {
-            const request = await CapSpeech.requestPermissions();
-            if (request.speechRecognition !== 'granted') {
-              alert("Microphone permission denied.");
-              return;
-            }
-          }
-
-          setInput("");
-          await CapSpeech.start({
-            language: "id-ID",
-            partialResults: true,
-            popup: false,
-          });
-          setIsListening(true);
-        }
-      } catch (error) {
-        console.error("Native Speech Error:", error);
-        setIsListening(false);
-      }
-    } else {
-      // Web Fallback
-      if (!WebSpeechRecognition) {
-        alert("Speech recognition is not supported in this browser/device.");
-        return;
-      }
-
-      if (isListening) {
-        webRecognitionRef.current?.stop();
-      } else {
-        setInput("");
-        webRecognitionRef.current?.start();
-        setIsListening(true);
-      }
-    }
-  };
+  const {
+    isListening,
+    transcript,
+    setTranscript,
+    toggleListening,
+    stopListening,
+  } = useSpeechRecognition();
 
   const handleSend = () => {
-    const trimmed = input.trim();
+    const trimmed = transcript.trim();
     if (!trimmed || disabled) return;
+
     onSend?.(trimmed);
-    setInput("");
-    
-    if (isListening) {
-      if (Capacitor.isNativePlatform()) {
-        CapSpeech.stop().catch(() => {});
-        setIsListening(false);
-      } else {
-        webRecognitionRef.current?.stop();
-      }
-    }
+    setTranscript("");
+
+    if (isListening) stopListening();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -141,11 +36,11 @@ export default function ChatInput({ onSend, disabled = false }: Readonly<ChatInp
   return (
     <div className="fixed bottom-25 left-0 right-0 px-5 z-40 animate-in slide-in-from-bottom-5 duration-500">
       <div className="max-w-2xl mx-auto flex items-center gap-1 p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-none backdrop-blur-md relative overflow-hidden">
-        
+
         {/* Pulse background when listening */}
         <AnimatePresence>
           {isListening && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -154,11 +49,12 @@ export default function ChatInput({ onSend, disabled = false }: Readonly<ChatInp
           )}
         </AnimatePresence>
 
-        <button 
+        {/* Mic Button */}
+        <button
           onClick={toggleListening}
           className={`relative p-3 rounded-2xl transition-all duration-300 ${
-            isListening 
-              ? "text-red-500 bg-red-50 dark:bg-red-500/20" 
+            isListening
+              ? "text-red-500 bg-red-50 dark:bg-red-500/20"
               : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5"
           }`}
         >
@@ -173,20 +69,22 @@ export default function ChatInput({ onSend, disabled = false }: Readonly<ChatInp
             <RiMicLine size={22} />
           )}
         </button>
-        
-        <input 
+
+        {/* Text Input */}
+        <input
           type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
+          value={transcript}
+          onChange={(e) => setTranscript(e.target.value)}
           onKeyDown={handleKeyDown}
           disabled={disabled}
           placeholder={isListening ? "Listening..." : "Ask Gemini to log an expense..."}
           className="flex-1 bg-transparent border-none outline-none text-[15px] text-slate-700 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-600 py-2 disabled:opacity-50"
         />
 
-        <button 
+        {/* Send Button */}
+        <button
           onClick={handleSend}
-          disabled={disabled || !input.trim()}
+          disabled={disabled || !transcript.trim()}
           className="w-12 h-12 flex items-center justify-center bg-teal-800 dark:bg-cyan-400 text-white dark:text-slate-900 rounded-2xl shadow-lg shadow-teal-500/20 dark:shadow-cyan-500/20 active:scale-95 transition-all disabled:opacity-50 disabled:active:scale-100"
         >
           <RiSendPlane2Line size={20} />

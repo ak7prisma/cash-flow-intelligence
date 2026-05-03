@@ -4,8 +4,9 @@ import SettingCard from '../../component/ui/SettingCard';
 import Input from '../../component/ui/Input';
 import Button from '../../component/ui/Button';
 import { FormContainer } from '../../component/auth/FormContainer';
+import AlertBanner from '../../component/ui/AlertBanner';
 
-export default function SecuritySettingContent () {
+export default function SecuritySettingContent() {
   const { changePassword, loading, error, setError } = useAuthActions();
 
   const [oldPassword, setOldPassword] = useState('');
@@ -59,43 +60,34 @@ export default function SecuritySettingContent () {
             </p>
           </div>
 
-          {error && (
-            <div className="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs font-medium tracking-wide animate-in fade-in slide-in-from-top-2 duration-300">
-              {error}
-            </div>
-          )}
-
-          {success && (
-            <div className="px-4 py-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-medium tracking-wide animate-in fade-in slide-in-from-top-2 duration-300">
-              {success}
-            </div>
-          )}
+          <AlertBanner message={error} />
+          <AlertBanner message={success} variant="success" />
 
           {/* Form Inputs */}
           <div className="space-y-4">
-            <Input 
-              label="Old Password" 
-              type="password" 
-              placeholder="••••••••••" 
+            <Input
+              label="Old Password"
+              type="password"
+              placeholder="••••••••••"
               value={oldPassword}
               onChange={(e) => setOldPassword(e.target.value)}
               disabled={loading}
             />
 
-            <Input 
-              label="New Password" 
-              type="password" 
-              placeholder="••••••••••" 
+            <Input
+              label="New Password"
+              type="password"
+              placeholder="••••••••••"
               hint="Use 8+ characters with a mix of letters, numbers &amp; symbols."
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               disabled={loading}
             />
 
-            <Input 
-              label="Confirm Password" 
-              type="password" 
-              placeholder="••••••••••" 
+            <Input
+              label="Confirm Password"
+              type="password"
+              placeholder="••••••••••"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               disabled={loading}
@@ -104,16 +96,16 @@ export default function SecuritySettingContent () {
 
           {/* Form Actions */}
           <div className="space-y-4 mt-2">
-            <Button 
+            <Button
               text={loading ? "Updating..." : "Update Password"}
-              variant="primary" 
+              variant="primary"
               type="submit"
               disabled={loading}
             />
-            
-            <Button 
-              text="Cancel and Return" 
-              variant="ghost" 
+
+            <Button
+              text="Cancel and Return"
+              variant="ghost"
               to='/profile'
               disabled={loading}
             />
