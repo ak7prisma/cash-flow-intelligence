@@ -13,7 +13,6 @@ export function useTransactions() {
   useEffect(() => {
     const currentUid = user?.uid ?? null;
 
-    // Reset store when user changes (account switch)
     if (prevUidRef.current !== null && currentUid !== prevUidRef.current) {
       reset();
     }

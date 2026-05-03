@@ -4,7 +4,11 @@ export const CATEGORIES = [
   "Transportation",
   "Entertainment",
   "Healthcare",
+  "Education",
   "Shopping",
+  "Bill",
+  "Others (Income)",
   "Salary",
-  "Bill"
+  "Bonus",
+  "Investment"
 ];

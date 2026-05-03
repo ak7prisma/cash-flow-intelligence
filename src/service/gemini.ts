@@ -22,8 +22,8 @@ const intentModel = genAI.getGenerativeModel({
   systemInstruction: `Your task is to parse user messages into transaction data. You MUST categorize each transaction into exactly ONE of the allowed categories below. If a transaction doesn't perfectly fit, choose the closest one or use 'Other'/'Others (Income)'. NEVER create your own category names.
 
 Allowed Categories:
-Expense: ['Food & Drink', 'Transport', 'Shopping', 'Bills', 'Health', 'Education', 'Entertainment', 'Other']
-Income: ['Salary', 'Bonus', 'Investment', 'Others (Income)']
+Expense: ['Other', 'Food & Beverage', 'Transportation', 'Shopping', 'Bills', 'Health', 'Education', 'Entertainment']
+Income: ['Others (Income)', 'Salary', 'Bonus', 'Investment']
 
 Return the response in this JSON format:
 {
