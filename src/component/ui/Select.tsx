@@ -48,7 +48,7 @@ export default function Select({
       </button>
 
       {isOpen && (
-        <div className="absolute top-[calc(100%+8px)] left-0 right-0 bg-white dark:bg-slate-800 border border-slate-100 dark:border-white/5 rounded-xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2">
+        <div className="absolute top-[calc(100%+8px)] left-0 right-0 bg-white dark:bg-slate-800 border border-slate-100 dark:border-white/5 rounded-xl shadow-2xl z-50 overflow-y-auto max-h-64 animate-in fade-in slide-in-from-top-2">
           {options.map((option) => (
             <button
               key={option}

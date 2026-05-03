@@ -4,6 +4,7 @@ import Button from "../ui/Button";
 import Input from "../ui/Input";
 import Select from "../ui/Select";
 import DateInput from "../ui/DateInput";
+import { CATEGORIES } from "../../data/categories";
 
 interface EditModalsProps {
   isOpen: boolean;
@@ -18,14 +19,6 @@ interface EditModalsProps {
   };
   rawItem?: any;
 }
-
-const CATEGORIES = [
-  "Electronics & Hardware",
-  "Food & Beverage",
-  "Transportation",
-  "Entertainment",
-  "Healthcare",
-];
 
 export default function EditModals({
   isOpen,

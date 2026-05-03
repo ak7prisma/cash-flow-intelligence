@@ -9,9 +9,39 @@
 
 @layer base {
   body {
-    @apply bg-base-light text-slate-900 transition-colors duration-300;
+    background-color: var(--color-base-light);
+    color: var(--color-slate-900);
+    transition: color 0.3s, background-color 0.3s;
   }
+  
   .dark body {
-    @apply bg-base-dark text-slate-100;
+    background-color: var(--color-base-dark);
+    color: var(--color-slate-100);
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--color-slate-200);
+    border-radius: 9999px;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background-color: var(--color-slate-700);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-slate-300);
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-slate-600);
   }
 }
