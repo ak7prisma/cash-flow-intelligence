@@ -57,7 +57,7 @@ function AppContent() {
           onComplete={() => setIsAnimationDone(true)} 
         />
       )}
-      <div style={{ display: showSplash ? "none" : "block" }}>
+      <div>
         <BrowserRouter>
           <ToastProvider>
             <Suspense fallback={<LoadingFallback />}>

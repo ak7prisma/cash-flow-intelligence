@@ -23,7 +23,7 @@ const ShutterSplashScreen: React.FC<ShutterSplashScreenProps> = ({ onComplete, r
     hideNativeSplash();
 
     const startClosing = async () => {
-      await new Promise(r => setTimeout(r, 100));
+      await new Promise(r => setTimeout(r, 1000));
       setStatus('closing');
 
       await new Promise(r => setTimeout(r, 800));
@@ -57,17 +57,24 @@ const ShutterSplashScreen: React.FC<ShutterSplashScreenProps> = ({ onComplete, r
   if (status === 'done') return null;
 
   const isClosed = status === 'closing' || (status === 'opening' && !(ready || safetyTrigger));
-  const topOverlayTransform = isClosed ? '-translate-y-70' : '-translate-y-full';
-  const bottomOverlayTransform = isClosed ? 'translate-y-70' : 'translate-y-full';
+  const topOverlayTransform = isClosed ? '-translate-y-75' : '-translate-y-full';
+  const bottomOverlayTransform = isClosed ? 'translate-y-75' : 'translate-y-full';
   
   const logoOpacity = status === 'idle' ? 'opacity-100' : 'opacity-0';
   const easing = status === 'opening' ? 'ease-out' : 'ease-in-out';
 
   return (
     <>
-      <BackgroundElement />
-      <div className="fixed inset-0 z-9999 flex items-center justify-center bg-slate-50 overflow-hidden">
-        
+      <div className="fixed inset-0 z-9999 flex items-center justify-center overflow-hidden">
+
+        <div 
+          className={`absolute inset-0 bg-slate-50 dark:bg-slate-900 transition-opacity duration-700 ease-in-out ${
+            status === 'opening' ? 'opacity-0' : 'opacity-100'
+          }`}
+        >
+          <BackgroundElement />
+        </div>
+
         <div className={`relative z-0 transition-opacity duration-500 ease-out ${logoOpacity}`}>
           <img 
             src="/LogoCFI.png" 
