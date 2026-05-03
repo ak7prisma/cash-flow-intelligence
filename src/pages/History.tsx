@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
 import MovementCard from "../component/History/MovementCard";
 import DeleteModals from "../component/modals/DeleteModals";
 import EditModals from "../component/modals/EditModals";
@@ -15,6 +16,19 @@ export default function History() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
+  
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeFilter]);
+
+  const totalPages = Math.ceil(filteredMovements.length / ITEMS_PER_PAGE);
+  const paginatedMovements = filteredMovements.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   const filters = ["All", "Income", "Expense"];
 
@@ -115,7 +129,7 @@ export default function History() {
         )}
         {!isLoading && filteredMovements.length > 0 && (
           <>
-            {filteredMovements.map((item) => {
+            {paginatedMovements.map((item) => {
               const mappedItem = {
                 id: item.id || Math.random().toString(),
                 title: item.category,
@@ -139,6 +153,39 @@ export default function History() {
                 />
               );
             })}
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between px-1">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-slate-600 dark:text-slate-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                >
+                  <LuChevronLeft size={20} />
+                  <span className="font-semibold text-sm">Prev</span>
+                </button>
+                
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-bold text-blue-950 dark:text-slate-100">
+                    {currentPage}
+                  </span>
+                  <span className="text-xs font-medium text-slate-400">/</span>
+                  <span className="text-xs font-medium text-slate-400">
+                    {totalPages}
+                  </span>
+                </div>
+
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  disabled={currentPage === totalPages}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-slate-600 dark:text-slate-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                >
+                  <span className="font-semibold text-sm">Next</span>
+                  <LuChevronRight size={20} />
+                </button>
+              </div>
+            )}
           </>
         )}
       </div>

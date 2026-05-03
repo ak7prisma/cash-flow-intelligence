@@ -20,7 +20,7 @@ export default function MovementCard({ item, onEdit, onDelete }: Readonly<Moveme
       className="group relative overflow-hidden bg-white/80 dark:bg-slate-900/40 backdrop-blur-sm p-5 rounded-xl border border-slate-100 dark:border-slate-800/50 shadow-sm transition-all duration-300"
     >
       {/* Background Icon */}
-      <div className="absolute right-25 top-1/2 -translate-y-1/2 opacity-10 pointer-events-none">
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-10 pointer-events-none">
         <item.icon size={140} />
       </div>
 
