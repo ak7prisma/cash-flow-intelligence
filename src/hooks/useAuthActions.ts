@@ -187,6 +187,12 @@ export const useAuthActions = () => {
   const logout = async () => {
     setLoading(true);
     try {
+      // Clear cached data before signing out
+      const { useTransactionStore } = await import("../store/useTransactionStore");
+      const { useChatStore } = await import("../store/useChatStore");
+      useTransactionStore.getState().reset();
+      useChatStore.getState().reset();
+
       await auth.signOut();
       return true;
     } catch (err: any) {

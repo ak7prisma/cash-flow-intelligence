@@ -4,18 +4,22 @@ import { type ChatMessage, generateId, getCurrentTime } from '../utils/assistant
 interface ChatState {
   messages: ChatMessage[];
   setMessages: (updater: ChatMessage[] | ((prev: ChatMessage[]) => ChatMessage[])) => void;
+  reset: () => void;
 }
 
-const initialMessage: ChatMessage = {
-  id: generateId(),
-  type: "bot",
-  message: "Hello! I'm your AI Cash Intelligence assistant. How can I help you log your expenses today?",
-  time: getCurrentTime(),
-};
+function createInitialMessage(): ChatMessage {
+  return {
+    id: generateId(),
+    type: "bot",
+    message: "Hello! I'm your AI Cash Intelligence assistant. How can I help you log your expenses today?",
+    time: getCurrentTime(),
+  };
+}
 
 export const useChatStore = create<ChatState>((set) => ({
-  messages: [initialMessage],
+  messages: [createInitialMessage()],
   setMessages: (updater) => set((state) => ({
     messages: typeof updater === 'function' ? updater(state.messages) : updater
   })),
+  reset: () => set({ messages: [createInitialMessage()] }),
 }));

@@ -1,15 +1,24 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { transactionService } from "../service/TransactionService";
 import { useAuth } from "../context/AuthContext";
 import { useTransactionStore } from "../store/useTransactionStore";
 
 export function useTransactions() {
   const { user } = useAuth();
-  const { transactions, isLoaded, setTransactions, setIsLoaded } = useTransactionStore();
+  const { transactions, isLoaded, setTransactions, setIsLoaded, reset } = useTransactionStore();
   const [isLoading, setIsLoading] = useState(!isLoaded);
   const [activeFilter, setActiveFilter] = useState("All");
+  const prevUidRef = useRef<string | null>(null);
 
   useEffect(() => {
+    const currentUid = user?.uid ?? null;
+
+    // Reset store when user changes (account switch)
+    if (prevUidRef.current !== null && currentUid !== prevUidRef.current) {
+      reset();
+    }
+    prevUidRef.current = currentUid;
+
     if (user && !isLoaded) {
       setIsLoading(true);
       transactionService.getTransactionsByUser(user.uid)
@@ -22,7 +31,7 @@ export function useTransactions() {
     } else if (isLoaded) {
       setIsLoading(false);
     }
-  }, [user, isLoaded, setTransactions, setIsLoaded]);
+  }, [user, isLoaded, setTransactions, setIsLoaded, reset]);
 
   const filteredMovements = useMemo(() => {
     return transactions.filter((item) => {

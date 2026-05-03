@@ -7,6 +7,7 @@ interface TransactionState {
   setTransactions: (transactions: Transaction[]) => void;
   addTransaction: (transaction: Transaction) => void;
   setIsLoaded: (isLoaded: boolean) => void;
+  reset: () => void;
 }
 
 export const useTransactionStore = create<TransactionState>((set) => ({
@@ -16,4 +17,5 @@ export const useTransactionStore = create<TransactionState>((set) => ({
   addTransaction: (transaction) => 
     set((state) => ({ transactions: [transaction, ...state.transactions] })),
   setIsLoaded: (isLoaded) => set({ isLoaded }),
+  reset: () => set({ transactions: [], isLoaded: false }),
 }));
