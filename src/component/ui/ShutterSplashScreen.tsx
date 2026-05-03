@@ -64,7 +64,6 @@ const ShutterSplashScreen: React.FC<ShutterSplashScreenProps> = ({ onComplete, r
   const easing = status === 'opening' ? 'ease-out' : 'ease-in-out';
 
   return (
-    <>
       <div className="fixed inset-0 z-9999 flex items-center justify-center overflow-hidden">
 
         <div 
@@ -105,7 +104,6 @@ const ShutterSplashScreen: React.FC<ShutterSplashScreenProps> = ({ onComplete, r
           />
         </div>
       </div>
-    </>
   );
 };
 

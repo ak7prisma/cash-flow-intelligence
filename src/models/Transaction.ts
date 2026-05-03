@@ -6,75 +6,19 @@ import {
   type FirestoreDataConverter,
   type WithFieldValue,
 } from "firebase/firestore";
+import { Transaction } from "./BaseTransaction";
+import { IncomeTransaction } from "./IncomeTransaction";
+import { ExpenseTransaction } from "./ExpenseTransaction";
 
-export type TransactionType = "income" | "expense";
+// Re-export everything so other files can still import from here
+export * from "./BaseTransaction";
+export * from "./IncomeTransaction";
+export * from "./ExpenseTransaction";
 
-export class Transaction {
-  id?: string;
-  userId: string;
-  amount: number;
-  type: TransactionType;
-  category: string;
-  date: Date;
-  note?: string;
-
-  constructor(params: {
-    id?: string;
-    userId: string;
-    amount: number;
-    type: TransactionType;
-    category: string;
-    date: Date;
-    note?: string;
-  }) {
-    this.id = params.id;
-    this.userId = params.userId;
-    this.amount = params.amount;
-    this.type = params.type;
-    this.category = params.category;
-    this.date = params.date;
-    this.note = params.note;
-  }
-
-  /**
-   * Returns the amount formatted as IDR currency.
-   * Income is prefixed with "+", expense with "-".
-   * Example: "+ Rp 1.500.000" or "- Rp 250.000"
-   */
-  getFormattedAmount(): string {
-    const formatted = new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(this.amount);
-
-    return this.type === "income" ? `+ ${formatted}` : `- ${formatted}`;
-  }
-
-  /**
-   * Returns a plain object representation (useful for debugging / serialization).
-   */
-  toJSON() {
-    return {
-      id: this.id,
-      userId: this.userId,
-      amount: this.amount,
-      type: this.type,
-      category: this.category,
-      date: this.date.toISOString(),
-      note: this.note,
-    };
-  }
-}
-
-/**
- * Firestore data converter for the Transaction class.
- * Handles bidirectional mapping between Transaction instances and Firestore documents.
- *
- * - toFirestore: converts Transaction → Firestore doc (Date → Timestamp)
- * - fromFirestore: converts Firestore doc → Transaction (Timestamp → Date)
- */
+/*
+ Firestore data converter for the Transaction hierarchy.
+ Handles polymorphic instantiation during document fetching.
+*/
 export const transactionConverter: FirestoreDataConverter<Transaction> = {
   toFirestore(transaction: WithFieldValue<Transaction>): DocumentData {
     return {
@@ -92,14 +36,20 @@ export const transactionConverter: FirestoreDataConverter<Transaction> = {
     options?: SnapshotOptions
   ): Transaction {
     const data = snapshot.data(options);
-    return new Transaction({
+    const params = {
       id: snapshot.id,
       userId: data.userId,
       amount: data.amount,
-      type: data.type,
       category: data.category,
       date: (data.date as Timestamp).toDate(),
       note: data.note,
-    });
+    };
+
+    // Subtype Polymorphism: Selecting the correct class based on 'type'
+    if (data.type === "income") {
+      return new IncomeTransaction(params);
+    } else {
+      return new ExpenseTransaction(params);
+    }
   },
 };

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { RiErrorWarningLine } from "react-icons/ri";
 import { parseTransactionIntent, chatWithGemini } from "../service/gemini";
-import { Transaction } from "../models/Transaction";
+import { IncomeTransaction, ExpenseTransaction } from "../models/Transaction";
 import { transactionService } from "../service/TransactionService";
 import { type ChatMessage, generateId, getCurrentTime, formatIDR } from "../utils/assistantHelpers";
 import TransactionConfirmationBubble from "../component/Assistant/TransactionConfirmationBubble";
@@ -33,14 +33,17 @@ export function useAssistantChat(user: any) {
       if (intent.isTransaction) {
         // Transaction Recording
         for (const txData of intent.transactions) {
-          const newTransaction = new Transaction({
+          const txParams = {
             userId: user.uid,
             amount: txData.amount,
-            type: txData.type,
             category: txData.category,
             date: new Date(txData.date),
             note: txData.note || undefined,
-          });
+          };
+
+          const newTransaction = txData.type === "income" 
+            ? new IncomeTransaction(txParams) 
+            : new ExpenseTransaction(txParams);
 
           const docId = await transactionService.addTransaction(newTransaction);
           
