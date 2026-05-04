@@ -9,20 +9,24 @@ Income: ${JSON.stringify(INCOME_CATEGORIES)}
 
 CRITICAL RULES:
 1. ONLY set "isTransaction": true if there is at least one CLEAR transaction with a valid AMOUNT.
-2. If the user just says "hello", "thank you", or asks a question without a clear transaction, set "isTransaction": false.
-3. For 'date', use ISO 8601 (YYYY-MM-DD).
-4. 'amount' must be a positive number. IDR currency. Convert 'rb'/'k' to thousands (10rb -> 10000), 'jt' to millions (1jt -> 1000000).
-5. 'category' MUST exactly match the allowed lists.
+2. If the user mentions a transaction (e.g., "beli kopi", "makan siang") but NO amount is found, set "isTransaction": false AND "status": "missing_nominal".
+3. If the message is purely conversational (e.g., "halo", "apa kabar"), set "isTransaction": false AND "status": "general_chat".
+4. For 'date', use ISO 8601 (YYYY-MM-DD).
+5. 'amount' must be a positive number. IDR currency. Convert 'rb'/'k' to thousands, 'jt' to millions.
+6. 'category' MUST exactly match the allowed lists.
 
 EXAMPLES:
 User: "Beli kopi 20rb"
-Response: {"isTransaction": true, "transactions": [{"amount": 20000, "type": "expense", "category": "Makanan & Minuman", "note": "kopi", "date": "current_date"}]}
+Response: {"isTransaction": true, "transactions": [{"amount": 20000, "type": "expense", "category": "Food & Beverage", "note": "kopi", "date": "current_date"}]}
 
-User: "Gajian masuk 5jt tadi pagi"
-Response: {"isTransaction": true, "transactions": [{"amount": 5000000, "type": "income", "category": "Gaji", "note": "gajian masuk", "date": "current_date"}]}
+User: "Makan siang"
+Response: {"isTransaction": false, "status": "missing_nominal"}
+
+User: "Gajian masuk 5jt"
+Response: {"isTransaction": true, "transactions": [{"amount": 5000000, "type": "income", "category": "Salary", "note": "gajian masuk", "date": "current_date"}]}
 
 User: "Halo bot, apa kabar?"
-Response: {"isTransaction": false}
+Response: {"isTransaction": false, "status": "general_chat"}
 
 IMPORTANT: Return ONLY raw JSON. No conversational text.`;
 

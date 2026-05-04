@@ -31,7 +31,6 @@ export function useAssistantChat(user: any) {
       const intent = await parseTransactionIntent(text);
 
       if (intent.isTransaction) {
-        // Transaction Recording
         for (const txData of intent.transactions) {
           const txParams = {
             userId: user.uid,
@@ -47,7 +46,6 @@ export function useAssistantChat(user: any) {
 
           const docId = await transactionService.addTransaction(newTransaction);
           
-          // Sync to store
           newTransaction.id = docId;
           addTransaction(newTransaction);
 
@@ -68,38 +66,47 @@ export function useAssistantChat(user: any) {
           setMessages((prev) => [...prev, confirmationMessage]);
         }
       } else {
-        const stats = await transactionService.getDashboardStats(user.uid);
-        const recentTxs = await transactionService.getRecentTransactions(user.uid, 5);
-        
-        const userData = {
-          stats,
-          recentTransactions: recentTxs.map(tx => ({
-            amount: tx.amount,
-            type: tx.type,
-            category: tx.category,
-            date: tx.date
-          }))
-        };
-
-        const geminiReply = await chatWithGemini(text, userData);
-
-        let botMessageContent: React.ReactNode;
-        
-        if (geminiReply.isFinance && geminiReply.isAnalysis) {
-          botMessageContent = <FinancialAnalysisBubble reply={geminiReply} />;
+        if ('status' in intent && intent.status === "missing_nominal") {
+          const botMessage: ChatMessage = {
+            id: generateId(),
+            type: "bot",
+            message: "Boleh tahu berapa nominalnya kak? Misal: 'Beli kopi 20rb'",
+            time: getCurrentTime(),
+          };
+          setMessages((prev) => [...prev, botMessage]);
         } else {
+          const stats = await transactionService.getDashboardStats(user.uid);
+          const recentTxs = await transactionService.getRecentTransactions(user.uid, 5);
+          
+          const userData = {
+            stats,
+            recentTransactions: recentTxs.map(tx => ({
+              amount: tx.amount,
+              type: tx.type,
+              category: tx.category,
+              date: tx.date
+            }))
+          };
 
-          botMessageContent = (geminiReply as any).reply;
+          const geminiReply = await chatWithGemini(text, userData);
+
+          let botMessageContent: React.ReactNode;
+          
+          if (geminiReply.isFinance && geminiReply.isAnalysis) {
+            botMessageContent = <FinancialAnalysisBubble reply={geminiReply} />;
+          } else {
+            botMessageContent = (geminiReply as any).reply;
+          }
+
+          const botMessage: ChatMessage = {
+            id: generateId(),
+            type: "bot",
+            message: botMessageContent,
+            time: getCurrentTime(),
+          };
+
+          setMessages((prev) => [...prev, botMessage]);
         }
-
-        const botMessage: ChatMessage = {
-          id: generateId(),
-          type: "bot",
-          message: botMessageContent,
-          time: getCurrentTime(),
-        };
-
-        setMessages((prev) => [...prev, botMessage]);
       }
     } catch (error) {
       console.error("Assistant Error:", error);

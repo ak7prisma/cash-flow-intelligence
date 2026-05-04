@@ -78,6 +78,7 @@ export interface TransactionIntent {
 
 export interface NonTransactionIntent {
   isTransaction: false;
+  status?: "missing_nominal" | "general_chat";
 }
 
 export type GeminiIntent = TransactionIntent | NonTransactionIntent;
