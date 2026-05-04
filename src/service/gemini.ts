@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Transaction } from "../models/Transaction";
-import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "../data/categories";
-import { MODELS } from "../data/geminimodels";
+import { MODELS } from "../data/geminiModel";
+import { INTENT_SYSTEM_INSTRUCTION, CHAT_SYSTEM_INSTRUCTION } from "../data/geminiInstruction";
 
 // Constants & Configuration
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
@@ -13,13 +13,22 @@ const genAI = new GoogleGenerativeAI(API_KEY);
  */
 const parseGeminiJson = <T>(text: string): T => {
   try {
-    const cleaned = text
-      .replace(/^```(?:json)?\s*/i, "")
-      .replace(/\s*```$/i, "")
-      .trim();
+    // Look for JSON block within markdown code blocks or the whole string
+    const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/i) || [null, text];
+    const candidate = jsonMatch[1] || text;
+    
+    // Clean up any potential leading/trailing non-JSON characters
+    const start = candidate.indexOf('{');
+    const end = candidate.lastIndexOf('}');
+    
+    if (start === -1 || end === -1) {
+      return JSON.parse(candidate.trim()) as T;
+    }
+    
+    const cleaned = candidate.substring(start, end + 1).trim();
     return JSON.parse(cleaned) as T;
   } catch (error) {
-    console.error("Failed to parse Gemini JSON:", text);
+    console.error("Failed to parse Gemini JSON. Raw text:", text);
     throw error;
   }
 };
@@ -51,38 +60,6 @@ const generateWithFallback = async (
   console.error("All models failed. Last error:", lastError);
   throw lastError || new Error("Failed to generate content from all models");
 };
-
-// --- Instructions ---
-
-const INTENT_SYSTEM_INSTRUCTION = `Your task is to parse user messages into an array of transaction data.
-Identify ALL transactions mentioned in the message.
-
-Allowed Categories:
-Expense: ${JSON.stringify(EXPENSE_CATEGORIES)}
-Income: ${JSON.stringify(INCOME_CATEGORIES)}
-
-CRITICAL RULES:
-1. ONLY set "isTransaction": true if there is at least one CLEAR transaction with a valid AMOUNT mentioned.
-2. If the user mentions a transaction but NO amount is found, set "isTransaction": false.
-3. For the 'date' field, use ISO 8601 format (YYYY-MM-DD). Use the current date provided in the prompt.
-4. 'amount' must be a positive number. Assume currency is IDR. Convert 'rb'/'k' to thousands (e.g., 10rb = 10000).
-5. 'category' MUST be from the allowed lists.
-
-Return ONLY raw JSON:
-{
-  "isTransaction": boolean,
-  "transactions": [
-    { "amount": number, "type": "income" | "expense", "category": string, "note": string, "date": string }
-  ]
-}`;
-
-const CHAT_SYSTEM_INSTRUCTION = `
-  Nama: CFI Assistant.
-  Role: Pakar Manajemen Keuangan Pribadi.
-  Tugas: Menganalisa pengeluaran, memberi saran budget, dan memotivasi user untuk mengontrol keuangan.
-  Gaya Bahasa: Santai, informatif, gunakan istilah keuangan yang mudah dipahami.
-  Aplikasi: Cash Flow Intelligence.
-`;
 
 // --- Interfaces ---
 
@@ -134,7 +111,7 @@ export const parseTransactionIntent = async (message: string): Promise<GeminiInt
     const today = new Date().toISOString().split("T")[0];
     const prompt = `Current Date: ${today}\nUser Message: ${message}`;
     
-    const text = await generateWithFallback(MODELS.DEFAULT, prompt, INTENT_SYSTEM_INSTRUCTION);
+    const text = await generateWithFallback(MODELS.CLASSIFICATION, prompt, INTENT_SYSTEM_INSTRUCTION);
     return parseGeminiJson<GeminiIntent>(text);
   } catch (error) {
     if (error instanceof SyntaxError) return { isTransaction: false };
