@@ -1,10 +1,10 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Transaction } from "../models/Transaction";
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "../data/categories";
+import { MODELS } from "../data/geminimodels";
 
 // Constants & Configuration
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-const DEFAULT_MODEL = "gemini-3.1-flash-lite-preview";
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 /**
@@ -24,22 +24,37 @@ const parseGeminiJson = <T>(text: string): T => {
   }
 };
 
-// --- Models ---
+// Core helper to call Gemini with a model list fallback.
 
-const mainModel = genAI.getGenerativeModel({
-  model: DEFAULT_MODEL,
-  systemInstruction: `
-    Nama: CFI Assistant.
-    Role: Pakar Manajemen Keuangan Pribadi.
-    Tugas: Menganalisa pengeluaran, memberi saran budget, dan memotivasi user untuk mengontrol keuangan.
-    Gaya Bahasa: Santai, informatif, gunakan istilah keuangan yang mudah dipahami.
-    Aplikasi: Cash Flow Intelligence.
-  `,
-});
+const generateWithFallback = async (
+  modelList: string[],
+  prompt: string,
+  systemInstruction?: string
+): Promise<string> => {
+  let lastError: any;
 
-const intentModel = genAI.getGenerativeModel({
-  model: DEFAULT_MODEL,
-  systemInstruction: `Your task is to parse user messages into an array of transaction data.
+  for (const modelName of modelList) {
+    try {
+      const model = genAI.getGenerativeModel({
+        model: modelName,
+        systemInstruction,
+      });
+      const result = await model.generateContent(prompt);
+      const text = result.response.text();
+      if (text) return text;
+    } catch (error) {
+      lastError = error;
+      console.warn(`Model ${modelName} failed, trying next...`, error);
+    }
+  }
+
+  console.error("All models failed. Last error:", lastError);
+  throw lastError || new Error("Failed to generate content from all models");
+};
+
+// --- Instructions ---
+
+const INTENT_SYSTEM_INSTRUCTION = `Your task is to parse user messages into an array of transaction data.
 Identify ALL transactions mentioned in the message.
 
 Allowed Categories:
@@ -59,8 +74,15 @@ Return ONLY raw JSON:
   "transactions": [
     { "amount": number, "type": "income" | "expense", "category": string, "note": string, "date": string }
   ]
-}`,
-});
+}`;
+
+const CHAT_SYSTEM_INSTRUCTION = `
+  Nama: CFI Assistant.
+  Role: Pakar Manajemen Keuangan Pribadi.
+  Tugas: Menganalisa pengeluaran, memberi saran budget, dan memotivasi user untuk mengontrol keuangan.
+  Gaya Bahasa: Santai, informatif, gunakan istilah keuangan yang mudah dipahami.
+  Aplikasi: Cash Flow Intelligence.
+`;
 
 // --- Interfaces ---
 
@@ -106,16 +128,14 @@ export type GeminiChatResponse = FinancialAnalysisResponse | GeneralChatResponse
 
 // --- Service Functions ---
 
-/**
- * Parses user message to determine if it's a transaction recording intent.
- */
+// Parses user message to determine if it's a transaction recording intent.
 export const parseTransactionIntent = async (message: string): Promise<GeminiIntent> => {
   try {
     const today = new Date().toISOString().split("T")[0];
     const prompt = `Current Date: ${today}\nUser Message: ${message}`;
     
-    const result = await intentModel.generateContent(prompt);
-    return parseGeminiJson<GeminiIntent>(result.response.text());
+    const text = await generateWithFallback(MODELS.DEFAULT, prompt, INTENT_SYSTEM_INSTRUCTION);
+    return parseGeminiJson<GeminiIntent>(text);
   } catch (error) {
     if (error instanceof SyntaxError) return { isTransaction: false };
     console.error("Intent Parse Error:", error);
@@ -123,9 +143,8 @@ export const parseTransactionIntent = async (message: string): Promise<GeminiInt
   }
 };
 
-/**
- * Handles general chat and financial analysis requests.
- */
+//Handles general chat and financial analysis requests.
+
 export const chatWithGemini = async (message: string, userData?: any): Promise<GeminiChatResponse> => {
   const prompt = `
     You are a Cash Flow & Financial Analyst. Your PRIMARY jobs are: 1) Analyzing the user's injected financial data, 2) Providing short, concise financial advice/summaries based on the data, and 3) Answering general finance questions.
@@ -144,19 +163,17 @@ export const chatWithGemini = async (message: string, userData?: any): Promise<G
   `;
 
   try {
-    const result = await mainModel.generateContent(prompt);
-    return parseGeminiJson<GeminiChatResponse>(result.response.text());
+    const text = await generateWithFallback(MODELS.DEFAULT, prompt, CHAT_SYSTEM_INSTRUCTION);
+    return parseGeminiJson<GeminiChatResponse>(text);
   } catch (error) {
     console.error("Chat Error:", error);
     throw error;
   }
 };
 
-/**
- * Generates a short daily financial summary based on transactions.
- */
+// Generates a short daily financial summary based on transactions.
+
 export const getDailyAnalytics = async (transactions: Transaction[]): Promise<string> => {
-  const models = [DEFAULT_MODEL, 'gemini-3-flash-preview', 'gemini-2.5-flash-lite-preview'];
   const prompt = `
     You are a Financial Analyst. Based on the user's recent transactions, provide a very short, insightful financial summary (max 2 sentences). 
     Focus on their biggest expense or income. Respond in Indonesian. Plain text only.
@@ -164,15 +181,11 @@ export const getDailyAnalytics = async (transactions: Transaction[]): Promise<st
     Transactions: ${JSON.stringify(transactions)}
   `;
 
-  for (const modelName of models) {
-    try {
-      const model = genAI.getGenerativeModel({ model: modelName });
-      const result = await model.generateContent(prompt);
-      return result.response.text().trim();
-    } catch (error) {
-      console.warn(`Model ${modelName} failed, trying next...`);
-    }
+  try {
+    const text = await generateWithFallback(MODELS.DAILY_INSIGHT, prompt);
+    return text.trim();
+  } catch (error) {
+    console.error("Daily Analytics Error:", error);
+    return "Analisis AI sedang beristirahat karena limit server. Silakan cek kembali nanti!";
   }
-
-  return "Analisis AI sedang beristirahat karena limit server. Silakan cek kembali nanti!";
 };
