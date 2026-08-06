@@ -1,0 +1,161 @@
+[
+  {
+    "historyId": "user_high_food",
+    "transactions": [
+      {
+        "date": "2026-07-01",
+        "amount": 5000000,
+        "category": "Salary",
+        "transactionType": "income"
+      },
+      {
+        "date": "2026-07-03",
+        "amount": 150000,
+        "category": "Food & Beverage",
+        "transactionType": "expense"
+      },
+      {
+        "date": "2026-07-05",
+        "amount": 200000,
+        "category": "Food & Beverage",
+        "transactionType": "expense"
+      },
+      {
+        "date": "2026-07-07",
+        "amount": 250000,
+        "category": "Shopping",
+        "transactionType": "expense"
+      },
+      {
+        "date": "2026-07-10",
+        "amount": 180000,
+        "category": "Food & Beverage",
+        "transactionType": "expense"
+      },
+      {
+        "date": "2026-07-12",
+        "amount": 300000,
+        "category": "Entertainment",
+        "transactionType": "expense"
+      },
+      {
+        "date": "2026-07-15",
+        "amount": 150000,
+        "category": "Food & Beverage",
+        "transactionType": "expense"
+      },
+      {
+        "date": "2026-07-20",
+        "amount": 220000,
+        "category": "Food & Beverage",
+        "transactionType": "expense"
+      },
+      {
+        "date": "2026-07-25",
+        "amount": 1200000,
+        "category": "Bill",
+        "transactionType": "expense"
+      },
+      {
+        "date": "2026-07-28",
+        "amount": 150000,
+        "category": "Food & Beverage",
+        "transactionType": "expense"
+      }
+    ]
+  },
+  {
+    "historyId": "user_high_entertainment",
+    "transactions": [
+      {
+        "date": "2026-07-01",
+        "amount": 10000000,
+        "category": "Salary",
+        "transactionType": "income"
+      },
+      {
+        "date": "2026-07-05",
+        "amount": 1500000,
+        "category": "Entertainment",
+        "transactionType": "expense"
+      },
+      {
+        "date": "2026-07-10",
+        "amount": 800000,
+        "category": "Shopping",
+        "transactionType": "expense"
+      },
+      {
+        "date": "2026-07-12",
+        "amount": 1200000,
+        "category": "Entertainment",
+        "transactionType": "expense"
+      },
+      {
+        "date": "2026-07-15",
+        "amount": 300000,
+        "category": "Food & Beverage",
+        "transactionType": "expense"
+      },
+      {
+        "date": "2026-07-20",
+        "amount": 1000000,
+        "category": "Entertainment",
+        "transactionType": "expense"
+      },
+      {
+        "date": "2026-07-25",
+        "amount": 1500000,
+        "category": "Bill",
+        "transactionType": "expense"
+      }
+    ]
+  },
+  {
+    "historyId": "user_low_income_high_bills",
+    "transactions": [
+      {
+        "date": "2026-07-01",
+        "amount": 3000000,
+        "category": "Salary",
+        "transactionType": "income"
+      },
+      {
+        "date": "2026-07-02",
+        "amount": 800000,
+        "category": "Bill",
+        "transactionType": "expense"
+      },
+      {
+        "date": "2026-07-05",
+        "amount": 1200000,
+        "category": "Bill",
+        "transactionType": "expense"
+      },
+      {
+        "date": "2026-07-10",
+        "amount": 250000,
+        "category": "Food & Beverage",
+        "transactionType": "expense"
+      },
+      {
+        "date": "2026-07-15",
+        "amount": 300000,
+        "category": "Healthcare",
+        "transactionType": "expense"
+      },
+      {
+        "date": "2026-07-20",
+        "amount": 200000,
+        "category": "Transportation",
+        "transactionType": "expense"
+      },
+      {
+        "date": "2026-07-25",
+        "amount": 400000,
+        "category": "Bill",
+        "transactionType": "expense"
+      }
+    ]
+  }
+]

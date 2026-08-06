@@ -4,14 +4,14 @@ import { MODELS } from "../data/geminiModel";
 import { INTENT_SYSTEM_INSTRUCTION, CHAT_SYSTEM_INSTRUCTION } from "../data/geminiInstruction";
 
 // Constants & Configuration
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const API_KEY = (import.meta as any).env?.VITE_GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 /**
  * Helper to clean and parse JSON from Gemini's response.
  * Handles cases with or without markdown code blocks.
  */
-const parseGeminiJson = <T>(text: string): T => {
+export const parseGeminiJson = <T>(text: string): T => {
   try {
     // Look for JSON block within markdown code blocks or the whole string
     const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/i) || [null, text];
@@ -35,7 +35,7 @@ const parseGeminiJson = <T>(text: string): T => {
 
 // Core helper to call Gemini with a model list fallback.
 
-const generateWithFallback = async (
+export const generateWithFallback = async (
   modelList: string[],
   prompt: string,
   systemInstruction?: string

@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Test suite results
+test-suite/results/*
+!test-suite/results/.gitkeep
