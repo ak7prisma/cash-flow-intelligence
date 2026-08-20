@@ -25,22 +25,8 @@ export async function callAiEngine(promptText: string): Promise<{
   // Determine active engine ('llm' or 'slm') from process.env.AI_ENGINE
   const engine = process.env.AI_ENGINE || 'llm';
 
-  // Determine model list based on the engine
-  let modelList: string[] = [];
-  if (engine === 'slm') {
-    modelList = MODELS.CLASSIFICATION.filter((m) => m.toLowerCase().includes('gemma'));
-    if (modelList.length === 0) {
-      modelList = ['gemma-4-31b-it', 'gemma-4-26b-it'];
-    }
-  } else {
-    modelList = MODELS.CLASSIFICATION.filter((m) => m.toLowerCase().includes('gemini'));
-    if (modelList.length === 0) {
-      modelList = MODELS.DEFAULT.filter((m) => m.toLowerCase().includes('gemini'));
-    }
-    if (modelList.length === 0) {
-      modelList = ['gemini-3.1-flash-lite', 'gemini-3.5-flash-lite'];
-    }
-  }
+  // Use CLASSIFICATION models (all Gemini now, Gemma has been removed)
+  let modelList: string[] = MODELS.CLASSIFICATION;
 
   // Prepend current date to the prompt as done in gemini.ts
   const today = new Date().toISOString().split('T')[0];
