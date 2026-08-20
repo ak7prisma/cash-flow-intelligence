@@ -13,12 +13,15 @@ import { generateWithFallback, parseGeminiJson } from '../../src/service/gemini'
 import { MODELS } from '../../src/data/geminiModel';
 import { INTENT_SYSTEM_INSTRUCTION } from '../../src/data/geminiInstruction';
 import { TransactionJSON } from './types';
+import { defaultRateLimiter } from './rate-limiter';
 
 export async function callAiEngine(promptText: string): Promise<{
   raw: string;
   parsed: TransactionJSON;
   timings: { t0: number; t1: number };
 }> {
+  await defaultRateLimiter.acquire();
+
   // Determine active engine ('llm' or 'slm') from process.env.AI_ENGINE
   const engine = process.env.AI_ENGINE || 'llm';
 

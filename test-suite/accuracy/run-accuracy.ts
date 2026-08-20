@@ -103,8 +103,8 @@ async function main() {
   const csvContent = fs.readFileSync(datasetPath, 'utf8');
   const { headers, rows } = parseCSV(csvContent);
 
-  // Validate headers
-  const requiredHeaders = ['Prompt', 'True_Type', 'True_Amount', 'True_Category', 'True_Date'];
+  // Validate headers (date column is optional since date is excluded from accuracy)
+  const requiredHeaders = ['Prompt', 'True_Type', 'True_Amount', 'True_Category'];
   const missingHeaders = requiredHeaders.filter((h) => !headers.includes(h));
   if (missingHeaders.length > 0) {
     throw new Error(
@@ -117,17 +117,16 @@ async function main() {
     type: headers.indexOf('True_Type'),
     amount: headers.indexOf('True_Amount'),
     category: headers.indexOf('True_Category'),
-    date: headers.indexOf('True_Date')
+    date: headers.indexOf('True_Date') >= 0 ? headers.indexOf('True_Date') : headers.indexOf('Date')
   };
 
   const predictions: AccuracyPredictionRow[] = [];
 
-  // TP/FP/FN counters for each of the 4 fields
+  // TP/FP/FN counters for each checked field
   const fieldCounters = {
     transactionType: { tp: 0, fp: 0, fn: 0 },
     amount: { tp: 0, fp: 0, fn: 0 },
-    category: { tp: 0, fp: 0, fn: 0 },
-    date: { tp: 0, fp: 0, fn: 0 }
+    category: { tp: 0, fp: 0, fn: 0 }
   };
 
   let exactMatchCount = 0;
@@ -138,7 +137,7 @@ async function main() {
     const gtType = row[headerIndices.type].toUpperCase();
     const gtAmount = parseFloat(row[headerIndices.amount]);
     const gtCategory = row[headerIndices.category].trim().toLowerCase();
-    const gtDate = normalizeDate(row[headerIndices.date]);
+    const gtDate = headerIndices.date >= 0 ? normalizeDate(row[headerIndices.date]) : '';
 
     console.log(`[${idx + 1}/${rows.length}] engine=${engine} module=accuracy prompt="${promptText}"`);
 
@@ -165,8 +164,7 @@ async function main() {
     const matchType = predType === gtType ? 1 : 0;
     const matchAmount = Math.abs(predAmount - gtAmount) <= AMOUNT_TOLERANCE ? 1 : 0;
     const matchCategory = predCategory === gtCategory ? 1 : 0;
-    const matchDate = predDate === gtDate ? 1 : 0;
-    const allMatch = (matchType && matchAmount && matchCategory && matchDate) ? 1 : 0;
+    const allMatch = (matchType && matchAmount && matchCategory) ? 1 : 0;
 
     if (allMatch) {
       exactMatchCount++;
@@ -185,12 +183,11 @@ async function main() {
       match_transactionType: matchType,
       match_amount: matchAmount,
       match_category: matchCategory,
-      match_date: matchDate,
       all_match: allMatch
     });
 
     // Update TP/FP/FN counters
-    const updateCounters = (field: 'transactionType' | 'amount' | 'category' | 'date', isMatch: boolean, hasPred: boolean) => {
+    const updateCounters = (field: 'transactionType' | 'amount' | 'category', isMatch: boolean, hasPred: boolean) => {
       if (isMatch) {
         fieldCounters[field].tp++;
       } else {
@@ -204,9 +201,8 @@ async function main() {
     updateCounters('transactionType', matchType === 1, predType !== '');
     updateCounters('amount', matchAmount === 1, predAmount !== 0);
     updateCounters('category', matchCategory === 1, predCategory !== '');
-    updateCounters('date', matchDate === 1, predDate !== '');
 
-    console.log(`  Matches: Type=${matchType}, Amount=${matchAmount}, Category=${matchCategory}, Date=${matchDate} -> All=${allMatch}`);
+    console.log(`  Matches: Type=${matchType}, Amount=${matchAmount}, Category=${matchCategory} -> All=${allMatch}`);
   }
 
   // Calculate Precision, Recall, F1
@@ -220,17 +216,15 @@ async function main() {
   const typeMetrics = calculateMetrics(fieldCounters.transactionType);
   const amountMetrics = calculateMetrics(fieldCounters.amount);
   const categoryMetrics = calculateMetrics(fieldCounters.category);
-  const dateMetrics = calculateMetrics(fieldCounters.date);
 
-  const macroF1 = (typeMetrics.f1 + amountMetrics.f1 + categoryMetrics.f1 + dateMetrics.f1) / 4;
+  const macroF1 = (typeMetrics.f1 + amountMetrics.f1 + categoryMetrics.f1) / 3;
   const exactMatchAccuracy = exactMatchCount / rows.length;
 
   const summary: AccuracySummary = {
     perField: {
       transactionType: typeMetrics,
       amount: amountMetrics,
-      category: categoryMetrics,
-      date: dateMetrics
+      category: categoryMetrics
     },
     macroF1,
     exactMatchAccuracy
@@ -241,11 +235,11 @@ async function main() {
   const summaryPath = path.resolve(resultsDir, `accuracy_summary_${engine}_${timestamp}.json`);
 
   // Save predictions CSV
-  const csvHeaders = 'prompt_text,gt_transactionType,gt_amount,gt_category,gt_date,pred_transactionType,pred_amount,pred_category,pred_date,match_transactionType,match_amount,match_category,match_date,all_match\n';
+  const csvHeaders = 'prompt_text,gt_transactionType,gt_amount,gt_category,gt_date,pred_transactionType,pred_amount,pred_category,pred_date,match_transactionType,match_amount,match_category,all_match\n';
   const csvRows = predictions
     .map(
       (p) =>
-        `"${p.prompt_text.replace(/"/g, '""')}",${p.gt_transactionType},${p.gt_amount},"${p.gt_category}",${p.gt_date},${p.pred_transactionType},${p.pred_amount},"${p.pred_category}",${p.pred_date},${p.match_transactionType},${p.match_amount},${p.match_category},${p.match_date},${p.all_match}`
+        `"${p.prompt_text.replace(/"/g, '""')}",${p.gt_transactionType},${p.gt_amount},"${p.gt_category}",${p.gt_date},${p.pred_transactionType},${p.pred_amount},"${p.pred_category}",${p.pred_date},${p.match_transactionType},${p.match_amount},${p.match_category},${p.all_match}`
     )
     .join('\n');
   fs.writeFileSync(predictionsPath, csvHeaders + csvRows, 'utf8');

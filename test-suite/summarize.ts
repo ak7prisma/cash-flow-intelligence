@@ -70,25 +70,61 @@ function extractLatency(filePath: string | null): LatencyData {
   return { mean: 'N/A', p95: 'N/A' };
 }
 
+const FIELD_LABELS: Record<string, string> = {
+  transactionType: 'Transaction Type',
+  amount: 'Amount',
+  category: 'Category'
+};
+
+interface AccuracyFieldData {
+  precision: string;
+  recall: string;
+  f1: string;
+}
+
 interface AccuracyData {
   macroF1: string;
   exactMatch: string;
+  perField: Record<string, AccuracyFieldData>;
+}
+
+function emptyAccuracyField(): AccuracyFieldData {
+  return { precision: 'N/A', recall: 'N/A', f1: 'N/A' };
 }
 
 function extractAccuracy(filePath: string | null): AccuracyData {
-  if (!filePath) return { macroF1: 'N/A', exactMatch: 'N/A' };
+  const empty: AccuracyData = {
+    macroF1: 'N/A',
+    exactMatch: 'N/A',
+    perField: Object.fromEntries(Object.keys(FIELD_LABELS).map((k) => [k, emptyAccuracyField()]))
+  };
+  if (!filePath) return empty;
   try {
     const content = JSON.parse(fs.readFileSync(filePath, 'utf8'));
     const macroF1 = Number(content.macroF1);
     const exactMatch = Number(content.exactMatchAccuracy);
+    const perField: Record<string, AccuracyFieldData> = {};
+    for (const field of Object.keys(FIELD_LABELS)) {
+      const m = content.perField && content.perField[field];
+      if (m) {
+        perField[field] = {
+          precision: isNaN(Number(m.precision)) ? 'N/A' : Number(m.precision).toFixed(4),
+          recall: isNaN(Number(m.recall)) ? 'N/A' : Number(m.recall).toFixed(4),
+          f1: isNaN(Number(m.f1)) ? 'N/A' : Number(m.f1).toFixed(4)
+        };
+      } else {
+        perField[field] = emptyAccuracyField();
+      }
+    }
     return {
       macroF1: isNaN(macroF1) ? 'N/A' : macroF1.toFixed(4),
-      exactMatch: isNaN(exactMatch) ? 'N/A' : `${(exactMatch * 100).toFixed(2)}%`
+      exactMatch: isNaN(exactMatch) ? 'N/A' : `${(exactMatch * 100).toFixed(2)}%`,
+      perField
     };
   } catch (err) {
     console.error(`Error reading/parsing accuracy file ${filePath}:`, err);
   }
-  return { macroF1: 'N/A', exactMatch: 'N/A' };
+  return empty;
 }
 
 interface RelevanceData {
@@ -175,6 +211,24 @@ async function main() {
 | Avg Contextual Accuracy | ${relLlm.avgAcc} | ${relSlm.avgAcc} |
 | Avg Relevance | ${relLlm.avgRel} | ${relSlm.avgRel} |
 | Avg Actionability | ${relLlm.avgAct} | ${relSlm.avgAct} |
+
+## F1-Score Calculation Detail
+
+### LLM (gemini-flash)
+
+| Field | Precision | Recall | F1 |
+| --- | --- | --- | --- |
+| Transaction Type | ${accLlm.perField.transactionType.precision} | ${accLlm.perField.transactionType.recall} | ${accLlm.perField.transactionType.f1} |
+| Amount | ${accLlm.perField.amount.precision} | ${accLlm.perField.amount.recall} | ${accLlm.perField.amount.f1} |
+| Category | ${accLlm.perField.category.precision} | ${accLlm.perField.category.recall} | ${accLlm.perField.category.f1} |
+
+### SLM (gemma)
+
+| Field | Precision | Recall | F1 |
+| --- | --- | --- | --- |
+| Transaction Type | ${accSlm.perField.transactionType.precision} | ${accSlm.perField.transactionType.recall} | ${accSlm.perField.transactionType.f1} |
+| Amount | ${accSlm.perField.amount.precision} | ${accSlm.perField.amount.recall} | ${accSlm.perField.amount.f1} |
+| Category | ${accSlm.perField.category.precision} | ${accSlm.perField.category.recall} | ${accSlm.perField.category.f1} |
 `;
 
   const outputPath = path.resolve(resultsDir, 'evaluation_summary.md');

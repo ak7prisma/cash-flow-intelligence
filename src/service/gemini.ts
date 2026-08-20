@@ -4,7 +4,7 @@ import { MODELS } from "../data/geminiModel";
 import { INTENT_SYSTEM_INSTRUCTION, CHAT_SYSTEM_INSTRUCTION } from "../data/geminiInstruction";
 
 // Constants & Configuration
-const API_KEY = (import.meta as any).env?.VITE_GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+const API_KEY = (import.meta as any).env?.VITE_GEMINI_API_KEY
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 /**

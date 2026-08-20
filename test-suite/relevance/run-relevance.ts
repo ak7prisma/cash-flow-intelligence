@@ -9,6 +9,7 @@ import { generateWithFallback, parseGeminiJson } from '../../src/service/gemini'
 import { CHAT_SYSTEM_INSTRUCTION } from '../../src/data/geminiInstruction';
 import { MODELS } from '../../src/data/geminiModel';
 import { RelevanceRaw, RelevanceSummaryRow } from '../shared/types';
+import { defaultRateLimiter } from '../shared/rate-limiter';
 import dotenv from 'dotenv';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -41,46 +42,99 @@ if (!fs.existsSync(resultsDir)) {
 // Generate sample-history.json if it doesn't exist
 if (!fs.existsSync(historyPath)) {
   const defaultHistory = [
-    {
-      "historyId": "user_high_food",
-      "transactions": [
-        { "date": "2026-07-01", "amount": 5000000, "category": "Salary", "transactionType": "income" },
-        { "date": "2026-07-03", "amount": 150000, "category": "Food & Beverage", "transactionType": "expense" },
-        { "date": "2026-07-05", "amount": 200000, "category": "Food & Beverage", "transactionType": "expense" },
-        { "date": "2026-07-07", "amount": 250000, "category": "Shopping", "transactionType": "expense" },
-        { "date": "2026-07-10", "amount": 180000, "category": "Food & Beverage", "transactionType": "expense" },
-        { "date": "2026-07-12", "amount": 300000, "category": "Entertainment", "transactionType": "expense" },
-        { "date": "2026-07-15", "amount": 150000, "category": "Food & Beverage", "transactionType": "expense" },
-        { "date": "2026-07-20", "amount": 220000, "category": "Food & Beverage", "transactionType": "expense" },
-        { "date": "2026-07-25", "amount": 1200000, "category": "Bill", "transactionType": "expense" },
-        { "date": "2026-07-28", "amount": 150000, "category": "Food & Beverage", "transactionType": "expense" }
-      ]
-    },
-    {
-      "historyId": "user_high_entertainment",
-      "transactions": [
-        { "date": "2026-07-01", "amount": 10000000, "category": "Salary", "transactionType": "income" },
-        { "date": "2026-07-05", "amount": 1500000, "category": "Entertainment", "transactionType": "expense" },
-        { "date": "2026-07-10", "amount": 800000, "category": "Shopping", "transactionType": "expense" },
-        { "date": "2026-07-12", "amount": 1200000, "category": "Entertainment", "transactionType": "expense" },
-        { "date": "2026-07-15", "amount": 300000, "category": "Food & Beverage", "transactionType": "expense" },
-        { "date": "2026-07-20", "amount": 1000000, "category": "Entertainment", "transactionType": "expense" },
-        { "date": "2026-07-25", "amount": 1500000, "category": "Bill", "transactionType": "expense" }
-      ]
-    },
-    {
-      "historyId": "user_low_income_high_bills",
-      "transactions": [
-        { "date": "2026-07-01", "amount": 3000000, "category": "Salary", "transactionType": "income" },
-        { "date": "2026-07-02", "amount": 800000, "category": "Bill", "transactionType": "expense" },
-        { "date": "2026-07-05", "amount": 1200000, "category": "Bill", "transactionType": "expense" },
-        { "date": "2026-07-10", "amount": 250000, "category": "Food & Beverage", "transactionType": "expense" },
-        { "date": "2026-07-15", "amount": 300000, "category": "Healthcare", "transactionType": "expense" },
-        { "date": "2026-07-20", "amount": 200000, "category": "Transportation", "transactionType": "expense" },
-        { "date": "2026-07-25", "amount": 400000, "category": "Bill", "transactionType": "expense" }
-      ]
-    }
-  ];
+  {
+    "historyId": "user_food_and_groceries",
+    "transactions": [
+      { "date": "2026-08-09", "amount": 18000, "category": "Food & Beverage", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 7000, "category": "Food & Beverage", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 15000, "category": "Entertainment", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 7500, "category": "Food & Beverage", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 20000, "category": "Transportation", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 7000, "category": "Food & Beverage", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 8000, "category": "Food & Beverage", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 125000, "category": "Bill", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 7000, "category": "Other", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 10000, "category": "Food & Beverage", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 15000, "category": "Other", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 161, "category": "Other", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 20, "category": "Other", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 20, "category": "Transportation", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 70, "category": "Bill", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 90000, "category": "Entertainment", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 92000, "category": "Entertainment", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 13000, "category": "Entertainment", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 10000, "category": "Other", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 30000, "category": "Food & Beverage", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 5000, "category": "Other", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 26000, "category": "Transportation", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 24000, "category": "Shopping", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 45000, "category": "Bill", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 360000, "category": "Transportation", "transactionType": "expense" }
+    ]
+  },
+  {
+    "historyId": "user_shopping_and_lifestyle",
+    "transactions": [
+      { "date": "2026-08-09", "amount": 12000, "category": "Transportation", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 11000, "category": "Food & Beverage", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 14000, "category": "Shopping", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 10000, "category": "Food & Beverage", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 8000, "category": "Food & Beverage", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 14000, "category": "Food & Beverage", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 7000, "category": "Food & Beverage", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 80000, "category": "Food & Beverage", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 55000, "category": "Other", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 48000, "category": "Other", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 24000, "category": "Shopping", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 50000, "category": "Transportation", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 56000, "category": "Other", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 90000, "category": "Shopping", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 180000, "category": "Shopping", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 4000, "category": "Other", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 3000, "category": "Other", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 3000, "category": "Other", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 10000, "category": "Shopping", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 7000, "category": "Food & Beverage", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 6000, "category": "Food & Beverage", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 13000, "category": "Food & Beverage", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 22000, "category": "Food & Beverage", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 400000, "category": "Food & Beverage", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 15000, "category": "Shopping", "transactionType": "expense" }
+    ]
+  },
+  {
+    "historyId": "user_entertainment_and_income",
+    "transactions": [
+      { "date": "2026-08-09", "amount": 975000, "category": "Other", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 125, "category": "Other", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 185000, "category": "Entertainment", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 36, "category": "Other", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 109000, "category": "Bill", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 40000, "category": "Food & Beverage", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 35000, "category": "Food & Beverage", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 150000, "category": "Bill", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 50000, "category": "Bill", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 30000, "category": "Transportation", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 11000, "category": "Food & Beverage", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 30000, "category": "Other", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 26000, "category": "Other", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 300000, "category": "Entertainment", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 11000, "category": "Food & Beverage", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 10000, "category": "Entertainment", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 40, "category": "Entertainment", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 10000, "category": "Other", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 20000, "category": "Other", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 10000, "category": "Other", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 20000, "category": "Other", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 500000, "category": "Other", "transactionType": "expense" },
+      { "date": "2026-08-09", "amount": 100000, "category": "Others (Income)", "transactionType": "income" },
+      { "date": "2026-08-09", "amount": 200000, "category": "Others (Income)", "transactionType": "income" },
+      { "date": "2026-08-09", "amount": 100000, "category": "Others (Income)", "transactionType": "income" },
+      { "date": "2026-08-09", "amount": 250000, "category": "Others (Income)", "transactionType": "income" },
+      { "date": "2026-08-09", "amount": 2000000, "category": "Others (Income)", "transactionType": "income" }
+    ]
+  }
+];
   fs.writeFileSync(historyPath, JSON.stringify(defaultHistory, null, 2), 'utf8');
 }
 
@@ -142,6 +196,7 @@ async function main() {
     console.log(`  Calling model to generate insight...`);
     let rawResponse = '';
     try {
+      await defaultRateLimiter.acquire();
       rawResponse = await generateWithFallback(modelList, prompt, CHAT_SYSTEM_INSTRUCTION);
     } catch (err) {
       console.error(`  Error calling model for insight generation:`, err);
@@ -194,6 +249,7 @@ async function main() {
       `;
 
       try {
+        await defaultRateLimiter.acquire();
         const result = await judgeModel.generateContent(judgePrompt);
         const text = result.response.text();
         const evalObj = parseGeminiJson<{

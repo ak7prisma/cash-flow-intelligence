@@ -1,11 +1,78 @@
-Prompt,True_Type,True_Amount,True_Category,True_Date
-bayar pajak motor 250.000,EXPENSE,250000,Bill,2026-08-06
-beli headset bluetooth 120k,EXPENSE,120000,Shopping,2026-08-06
-kirim uang bulanan ke ibu 500rb,EXPENSE,500000,Other,2026-08-06
-checkout gamepad di tokped 283rb 600 perak,EXPENSE,283600,Shopping,2026-08-06
-beli air mineral 3000,EXPENSE,3000,Food & Beverage,2026-08-06
-tebus resep dokter 85 ribu,EXPENSE,85000,Healthcare,2026-08-06
-bayar spp semester 3 juta,EXPENSE,3000000,Education,2026-08-06
-tagihan pdam air 45k,EXPENSE,45000,Bill,2026-08-06
-top up diamond ml 25 ribu,EXPENSE,25000,Entertainment,2026-08-06
-beli game di steam 120rb,EXPENSE,120000,Entertainment,2026-08-06
+Date,Prompt,True_Type,True_Amount,True_Category
+2026-08-09,Tepung Terigu 18.000,EXPENSE,18000,Food & Beverage
+2026-08-09,Mentega 7.000,EXPENSE,7000,Food & Beverage
+2026-08-09,cocopie 15.000,EXPENSE,15000,Entertainment
+2026-08-09,susu ultra milk 7.500,EXPENSE,7500,Food & Beverage
+2026-08-09,Bensin 20.000,EXPENSE,20000,Transportation
+2026-08-09,Mie Indomie 7000,EXPENSE,7000,Food & Beverage
+2026-08-09,Tempe 8.000,EXPENSE,8000,Food & Beverage
+2026-08-09,kuota Internet 125.000,EXPENSE,125000,Bill
+2026-08-09,Model 7.000,EXPENSE,7000,Other
+2026-08-09,Gorengan 10.000,EXPENSE,10000,Food & Beverage
+2026-08-09,Dry food kitten 15.000,EXPENSE,15000,Other
+2026-08-09,Makan: 23*7,EXPENSE,161,Other
+2026-08-09,Jajan: 10*2,EXPENSE,20,Other
+2026-08-09,Bensin: 20,EXPENSE,20,Transportation
+2026-08-09,Pulsa: 70,EXPENSE,70,Bill
+2026-08-09,Top up Roblox: 90-300rb,EXPENSE,90000,Entertainment
+2026-08-09,Top up Discord 92rb,EXPENSE,92000,Entertainment
+2026-08-09,Top up Instagram Plus: 13rb,EXPENSE,13000,Entertainment
+2026-08-09,Top up Paket Perhari: 10rb,EXPENSE,10000,Other
+2026-08-09,Nasi padang 30rb,EXPENSE,30000,Food & Beverage
+2026-08-09,Mineral 5rb,EXPENSE,5000,Other
+2026-08-09,Bensin 26rb,EXPENSE,26000,Transportation
+2026-08-09,Sikat gigi 24rb,EXPENSE,24000,Shopping
+2026-08-09,Cod paket 45rb,EXPENSE,45000,Bill
+2026-08-09,Ban motor 360rb,EXPENSE,360000,Transportation
+2026-08-09,Cuci motor 12rb,EXPENSE,12000,Transportation
+2026-08-09,Cokelat 11rb,EXPENSE,11000,Food & Beverage
+2026-08-09,Pewangi pakaian 14rb,EXPENSE,14000,Shopping
+2026-08-09,Telor 10rb,EXPENSE,10000,Food & Beverage
+2026-08-09,Wortel 8rb,EXPENSE,8000,Food & Beverage
+2026-08-09,Labu siam 14rb,EXPENSE,14000,Food & Beverage
+2026-08-09,Nasi uduk 7rb,EXPENSE,7000,Food & Beverage
+2026-08-09,Donat 80rb,EXPENSE,80000,Food & Beverage
+2026-08-09,Fried chiken 55rb,EXPENSE,55000,Other
+2026-08-09,Beard papa 48rb,EXPENSE,48000,Other
+2026-08-09,Sabun muka 24rb,EXPENSE,24000,Shopping
+2026-08-09,Travel 50rb,EXPENSE,50000,Transportation
+2026-08-09,Lipstick 56rb,EXPENSE,56000,Other
+2026-08-09,Parfum 90rb,EXPENSE,90000,Shopping
+2026-08-09,Eyeshadow 180rb,EXPENSE,180000,Shopping
+2026-08-09,Masako 4rb,EXPENSE,4000,Other
+2026-08-09,Lada 3rb,EXPENSE,3000,Other
+2026-08-09,Garem 3rb,EXPENSE,3000,Other
+2026-08-09,Sunlight 10rb,EXPENSE,10000,Shopping
+2026-08-09,Nasi uduk 7rb,EXPENSE,7000,Food & Beverage
+2026-08-09,Roti 6rb,EXPENSE,6000,Food & Beverage
+2026-08-09,Onigiri 13rb,EXPENSE,13000,Food & Beverage
+2026-08-09,Dkriuk 22k per hari dalam 30 hari,EXPENSE,22000,Food & Beverage
+2026-08-09,Ikan 400k,EXPENSE,400000,Food & Beverage
+2026-08-09,Pasir 15k,EXPENSE,15000,Shopping
+2026-08-09,Akuarium 975k,EXPENSE,975000,Other
+2026-08-09,Lampu akuarium 50k + 75k,EXPENSE,125,Other
+2026-08-09,Top up coc 185k,EXPENSE,185000,Entertainment
+2026-08-09,+ latar 36k,EXPENSE,36,Other
+2026-08-09,Listrik 109k,EXPENSE,109000,Bill
+2026-08-09,Mie 40k,EXPENSE,40000,Food & Beverage
+2026-08-09,Bumbu dapur 35k,EXPENSE,35000,Food & Beverage
+2026-08-09,Member gym 150k,EXPENSE,150000,Bill
+2026-08-09,Listrik 50 ribu,EXPENSE,50000,Bill
+2026-08-09,Bensin full 30 ribu,EXPENSE,30000,Transportation
+2026-08-09,Dkriuk 11 RB dada nyo be,EXPENSE,11000,Food & Beverage
+2026-08-09,Telur sekilo 30 ribu,EXPENSE,30000,Other
+2026-08-09,Rokok Marlboro 26 ribu,EXPENSE,26000,Other
+2026-08-09,Top up starlight dan event 300 ribu,EXPENSE,300000,Entertainment
+2026-08-09,Beli Nescafe 11 ribu,EXPENSE,11000,Food & Beverage
+2026-08-09,Main futsal 10 ribu,EXPENSE,10000,Entertainment
+2026-08-09,Main biliard 40,EXPENSE,40,Entertainment
+2026-08-09,senin deposit 10k pasang argen,EXPENSE,10000,Other
+2026-08-09,selasa deposit 20k pasang spanyol,EXPENSE,20000,Other
+2026-08-09,"rabu deposit 10k pasang cape verde tahan 1,5",EXPENSE,10000,Other
+2026-08-09,"kamis deposit 20k pasang madrid over 1,5",EXPENSE,20000,Other
+2026-08-09,"sabtu deposit 500k pasang chelsea win sama hdp tahan emyu 1,5",EXPENSE,500000,Other
+2026-08-09,senin wd 100k,INCOME,100000,Others (Income)
+2026-08-09,selasa wd 200k,INCOME,200000,Others (Income)
+2026-08-09,rabu wd 100k,INCOME,100000,Others (Income)
+2026-08-09,jumat omu 250k,INCOME,250000,Others (Income)
+2026-08-09,sabtu pecah kapal wd 2 langsung 1 jt,INCOME,2000000,Others (Income)

@@ -47,7 +47,6 @@ export interface AccuracyPredictionRow {
   match_transactionType: number; // 1 or 0
   match_amount: number;          // 1 or 0
   match_category: number;        // 1 or 0
-  match_date: number;            // 1 or 0
   all_match: number;             // 1 or 0
 }
 
@@ -62,7 +61,6 @@ export interface AccuracySummary {
     transactionType: AccuracyFieldMetric;
     amount: AccuracyFieldMetric;
     category: AccuracyFieldMetric;
-    date: AccuracyFieldMetric;
   };
   macroF1: number;
   exactMatchAccuracy: number;
