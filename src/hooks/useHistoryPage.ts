@@ -18,16 +18,41 @@ export interface MappedMovement {
   icon: any;
 }
 
+function formatRelativeTime(date: Date): string {
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+  const diffHr = Math.floor(diffMs / 3600000);
+  const isToday = now.toDateString() === date.toDateString();
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const isYesterday = yesterday.toDateString() === date.toDateString();
+
+  if (isToday) {
+    if (diffMin < 1) return "Baru saja";
+    if (diffMin < 60) return `${diffMin} menit lalu`;
+    return `${diffHr} jam lalu`;
+  }
+
+  if (isYesterday) {
+    return `Kemarin, ${date.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}`;
+  }
+
+  return date.toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 function mapTransaction(item: any): MappedMovement {
   return {
     id: item.id || Math.random().toString(),
     title: item.category,
     subtitle: item.note || item.category,
-    time: item.date.toLocaleDateString("id-ID", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    }),
+    time: formatRelativeTime(item.date),
     amount: item.getFormattedAmount ? item.getFormattedAmount() : formatIDR(item.amount),
     type: item.type,
     icon: getCategoryIcon(item.category),
