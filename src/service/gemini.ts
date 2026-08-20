@@ -2,6 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Transaction } from "../models/Transaction";
 import { MODELS } from "../data/geminiModel";
 import { INTENT_SYSTEM_INSTRUCTION, CHAT_SYSTEM_INSTRUCTION } from "../data/geminiInstruction";
+import { getLocalDateISO } from "../utils/dateHelpers";
 
 // Constants & Configuration
 const API_KEY = (import.meta as any).env?.VITE_GEMINI_API_KEY
@@ -109,7 +110,7 @@ export type GeminiChatResponse = FinancialAnalysisResponse | GeneralChatResponse
 // Parses user message to determine if it's a transaction recording intent.
 export const parseTransactionIntent = async (message: string): Promise<GeminiIntent> => {
   try {
-    const today = new Date().toISOString().split("T")[0];
+    const today = getLocalDateISO();
     const prompt = `Current Date: ${today}\nUser Message: ${message}`;
     
     const text = await generateWithFallback(MODELS.CLASSIFICATION, prompt, INTENT_SYSTEM_INSTRUCTION);

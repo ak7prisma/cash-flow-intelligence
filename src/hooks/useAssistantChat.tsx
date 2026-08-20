@@ -4,6 +4,7 @@ import { parseTransactionIntent, chatWithGemini } from "../service/gemini";
 import { IncomeTransaction, ExpenseTransaction } from "../models/Transaction";
 import { transactionService } from "../service/TransactionService";
 import { type ChatMessage, generateId, getCurrentTime, formatIDR } from "../utils/assistantHelpers";
+import { parseLocalDate, getLocalDateISO } from "../utils/dateHelpers";
 import TransactionConfirmationBubble from "../component/Assistant/TransactionConfirmationBubble";
 import FinancialAnalysisBubble from "../component/Assistant/FinancialAnalysisBubble";
 import { useChatStore } from "../store/useChatStore";
@@ -32,11 +33,19 @@ export function useAssistantChat(user: any) {
 
       if (intent.isTransaction) {
         for (const txData of intent.transactions) {
+          // "YYYY-MM-DD" from Gemini must be parsed as local time, otherwise
+          // UTC parsing shifts it to 07:00 in WIB. If it's today, keep the
+          // actual current time so relative labels stay accurate.
+          const txDate =
+            txData.date === getLocalDateISO()
+              ? new Date()
+              : parseLocalDate(txData.date);
+
           const txParams = {
             userId: user.uid,
             amount: txData.amount,
             category: txData.category,
-            date: new Date(txData.date),
+            date: txDate,
             note: txData.note || undefined,
           };
 

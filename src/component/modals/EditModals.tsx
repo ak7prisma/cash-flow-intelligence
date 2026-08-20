@@ -5,6 +5,7 @@ import Input from "../ui/Input";
 import Select from "../ui/Select";
 import DateInput from "../ui/DateInput";
 import { CATEGORIES } from "../../data/categories";
+import { getLocalDateISO, parseLocalDate } from "../../utils/dateHelpers";
 
 interface EditModalsProps {
   isOpen: boolean;
@@ -31,18 +32,11 @@ export default function EditModals({
   const [amount, setAmount] = useState(rawItem?.amount?.toString() || "");
 
   const formattedDate = useMemo(() => {
-    const today = new Date();
-    if (item.time.toLowerCase().includes("today")) {
-      return today.toISOString().split("T")[0];
+    if (rawItem?.date) {
+      return getLocalDateISO(new Date(rawItem.date));
     }
-    if (item.time.toLowerCase().includes("yesterday")) {
-      const yesterday = new Date(today);
-      yesterday.setDate(today.getDate() - 1);
-      return yesterday.toISOString().split("T")[0];
-    }
-
-    return today.toISOString().split("T")[0];
-  }, [item?.time]);
+    return getLocalDateISO();
+  }, [rawItem?.date]);
 
   const [date, setDate] = useState(formattedDate);
 
@@ -98,10 +92,18 @@ export default function EditModals({
             text="Save Changes"
             variant="primary"
             onClick={() => {
+              // Parse the picked date as local time and keep the original
+              // time-of-day, so editing the date doesn't reset it to 00:00.
+              const [year, month, day] = date.split("-").map(Number);
+              const original = rawItem?.date ? new Date(rawItem.date) : null;
+              const newDate = original
+                ? new Date(year, month - 1, day, original.getHours(), original.getMinutes(), original.getSeconds())
+                : parseLocalDate(date);
+
               onSave({
                 amount: Number(amount) || 0,
                 category: selectedCategory,
-                date: new Date(date)
+                date: newDate
               });
               onClose();
             }}

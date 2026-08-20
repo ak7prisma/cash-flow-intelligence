@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTransactions } from "./useTransactions";
 import { getDailyAnalytics } from "../service/gemini";
+import { getLocalDateISO } from "../utils/dateHelpers";
 
 interface WeeklyTrend {
   labels: string[];
@@ -14,7 +15,7 @@ export function useDashboardData() {
 
   useEffect(() => {
     if (!isLoading && transactions.length > 0) {
-      const today = new Date().toISOString().split("T")[0];
+      const today = getLocalDateISO();
       const cacheKey = `geminiInsight_${today}`;
       const cachedInsight = localStorage.getItem(cacheKey);
 
