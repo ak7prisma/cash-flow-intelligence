@@ -5,7 +5,22 @@ import { INTENT_SYSTEM_INSTRUCTION, CHAT_SYSTEM_INSTRUCTION } from "../data/gemi
 import { getLocalDateISO } from "../utils/dateHelpers";
 
 // Constants & Configuration
-const API_KEY = (import.meta as any).env?.VITE_GEMINI_API_KEY
+// Resolve env from Vite (browser build) or Node (tsx test-suite). `import.meta.env`
+// only exists under Vite, so reading it alone yields undefined under tsx and the SDK
+// silently sends requests without a key, surfacing as a confusing 400 API_KEY_INVALID.
+const nodeEnv: Record<string, string | undefined> | undefined =
+  (globalThis as any).process?.env;
+const env: Record<string, string | undefined> = (import.meta as any).env ?? nodeEnv ?? {};
+
+const API_KEY = env.VITE_GEMINI_API_KEY ?? env.GEMINI_API_KEY;
+
+if (!API_KEY) {
+  throw new Error(
+    "VITE_GEMINI_API_KEY / GEMINI_API_KEY not found. " +
+      "Ensure .env.local exists in the project root and is loaded before this module."
+  );
+}
+
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 /**
@@ -36,23 +51,72 @@ export const parseGeminiJson = <T>(text: string): T => {
 
 // Core helper to call Gemini with a model list fallback.
 
+export interface AttemptLogInfo {
+  model_id: string;
+  t_start_iso: string;
+  latency_ms: number;
+  is_final_attempt: boolean;
+  http_status?: number;
+  error?: string;
+  prompt_tokens?: number;
+  output_tokens?: number;
+  thinking_tokens?: number;
+  cached_tokens?: number;
+  total_tokens?: number;
+  tokens_source: 'api' | 'estimated';
+  input_chars: number;
+}
+
 export const generateWithFallback = async (
   modelList: string[],
   prompt: string,
-  systemInstruction?: string
+  systemInstruction?: string,
+  onAttempt?: (info: AttemptLogInfo) => void
 ): Promise<string> => {
   let lastError: any;
 
-  for (const modelName of modelList) {
+  for (let i = 0; i < modelList.length; i++) {
+    const modelName = modelList[i];
+    const t_start = performance.now();
+    const t_start_iso = new Date().toISOString();
     try {
       const model = genAI.getGenerativeModel({
         model: modelName,
         systemInstruction,
       });
       const result = await model.generateContent(prompt);
+      const latency_ms = performance.now() - t_start;
       const text = result.response.text();
+      const usage = result.response.usageMetadata;
+      onAttempt?.({
+        model_id: modelName,
+        t_start_iso,
+        latency_ms,
+        is_final_attempt: true,
+        http_status: 200,
+        prompt_tokens: usage?.promptTokenCount,
+        output_tokens: usage?.candidatesTokenCount,
+        thinking_tokens: undefined,
+        cached_tokens: usage?.cachedContentTokenCount,
+        total_tokens: usage?.totalTokenCount,
+        tokens_source: usage ? 'api' : 'estimated',
+        input_chars: prompt.length + (systemInstruction?.length || 0),
+      });
       if (text) return text;
     } catch (error) {
+      const err = error as { status?: number; message?: string };
+      const latency_ms = performance.now() - t_start;
+      const status = err?.status && typeof err.status === 'number' ? err.status : undefined;
+      onAttempt?.({
+        model_id: modelName,
+        t_start_iso,
+        latency_ms,
+        is_final_attempt: i === modelList.length - 1,
+        http_status: status,
+        error: err?.message || String(error),
+        tokens_source: 'estimated',
+        input_chars: prompt.length + (systemInstruction?.length || 0),
+      });
       lastError = error;
       console.warn(`Model ${modelName} failed, trying next...`, error);
     }
