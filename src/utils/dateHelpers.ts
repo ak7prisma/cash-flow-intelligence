@@ -17,3 +17,28 @@ export function getLocalDateISO(date: Date = new Date()): string {
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
+
+// Returns the Monday (00:00 local time) of the week containing the given date.
+export function getStartOfWeek(date: Date = new Date()): Date {
+  const monday = new Date(date);
+  monday.setHours(0, 0, 0, 0);
+  const daysSinceMonday = (monday.getDay() + 6) % 7;
+  monday.setDate(monday.getDate() - daysSinceMonday);
+  return monday;
+}
+
+// Returns the given date at 23:59:59.999 local time.
+export function getEndOfDay(date: Date): Date {
+  const end = new Date(date);
+  end.setHours(23, 59, 59, 999);
+  return end;
+}
+
+// Whole-day difference between two local dates (DST-safe).
+export function diffInDays(from: Date, to: Date): number {
+  const a = new Date(from);
+  const b = new Date(to);
+  a.setHours(0, 0, 0, 0);
+  b.setHours(0, 0, 0, 0);
+  return Math.round((b.getTime() - a.getTime()) / (1000 * 60 * 60 * 24));
+}
