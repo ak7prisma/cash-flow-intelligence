@@ -1,8 +1,10 @@
 import MovementCard from "../component/History/MovementCard";
 import DeleteModals from "../component/modals/DeleteModals";
 import EditModals from "../component/modals/EditModals";
+import DateInput from "../component/ui/DateInput";
 import FilterTabs from "../component/ui/FilterTabs";
 import Pagination from "../component/ui/Pagination";
+import Select from "../component/ui/Select";
 import { useHistoryPage } from "../hooks/useHistoryPage";
 
 const FILTERS = ["All", "Income", "Expense"];
@@ -12,6 +14,14 @@ export default function History() {
     isLoading,
     activeFilter,
     setActiveFilter,
+    dateFrom,
+    setDateFrom,
+    dateTo,
+    setDateTo,
+    category,
+    setCategory,
+    categoryOptions,
+    resetFilters,
     filteredMovements,
     paginatedMovements,
     currentPage,
@@ -41,11 +51,45 @@ export default function History() {
       </div>
 
       {/* Filters */}
-      <FilterTabs
-        filters={FILTERS}
-        activeFilter={activeFilter}
-        onFilterChange={setActiveFilter}
-      />
+      <div className="flex flex-col gap-3">
+        <FilterTabs
+          filters={FILTERS}
+          activeFilter={activeFilter}
+          onFilterChange={setActiveFilter}
+        />
+
+        <div className="grid grid-cols-2 gap-3">
+          <DateInput
+            label="From"
+            value={dateFrom}
+            max={dateTo || undefined}
+            onChange={(event) => setDateFrom(event.target.value)}
+          />
+          <DateInput
+            label="To"
+            value={dateTo}
+            min={dateFrom || undefined}
+            onChange={(event) => setDateTo(event.target.value)}
+          />
+        </div>
+
+        <div className="flex items-end gap-3">
+          <Select
+            label="Category"
+            options={categoryOptions}
+            value={category}
+            onChange={setCategory}
+            className="flex-1"
+          />
+          <button
+            type="button"
+            onClick={resetFilters}
+            className="h-14 px-4 rounded-xl text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-200/60 dark:bg-slate-800/40 active:scale-[0.99] transition-all"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
 
       {/* Transaction List */}
       <div className="flex flex-col gap-4">

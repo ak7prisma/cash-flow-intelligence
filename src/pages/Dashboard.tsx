@@ -15,7 +15,11 @@ export default function Dashboard() {
     totalIncome,
     totalExpense,
     balance,
-    weeklyTrend,
+    chartTrend,
+    chartPeriod,
+    setChartPeriod,
+    chartMode,
+    setChartMode,
   } = useDashboardData();
 
   if (isLoading) {
@@ -33,7 +37,15 @@ export default function Dashboard() {
       <Title />
       <RevenueCard balance={balance} />
       <InsightCard insight={aiInsight} isLoading={isAiLoading} />
-      <WeeklyChart labels={weeklyTrend.labels} data={weeklyTrend.data} />
+      <WeeklyChart
+        labels={chartTrend.labels}
+        income={chartTrend.income}
+        expense={chartTrend.expense}
+        period={chartPeriod}
+        mode={chartMode}
+        onPeriodChange={setChartPeriod}
+        onModeChange={setChartMode}
+      />
       <MonthlyChart income={totalIncome} expense={totalExpense} />
       <RecentMove transactions={transactions.slice(0, 3)} />
     </div>
