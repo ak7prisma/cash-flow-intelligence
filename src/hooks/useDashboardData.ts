@@ -2,16 +2,20 @@ import { useState, useEffect, useMemo } from "react";
 import { useTransactions } from "./useTransactions";
 import { getDailyAnalytics } from "../service/gemini";
 import { getLocalDateISO } from "../utils/dateHelpers";
+import {
+  buildChartTrend,
+  type ChartMode,
+  type ChartPeriod,
+} from "../utils/chartHelpers";
 
-interface WeeklyTrend {
-  labels: string[];
-  data: number[];
-}
+export type { ChartMode, ChartPeriod } from "../utils/chartHelpers";
 
 export function useDashboardData() {
   const { transactions, isLoading } = useTransactions();
   const [aiInsight, setAiInsight] = useState("");
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [chartPeriod, setChartPeriod] = useState<ChartPeriod>("weekly");
+  const [chartMode, setChartMode] = useState<ChartMode>("expense");
 
   useEffect(() => {
     if (!isLoading && transactions.length > 0) {
@@ -47,42 +51,10 @@ export function useDashboardData() {
     return { totalIncome: income, totalExpense: expense, balance: income - expense };
   }, [transactions]);
 
-  const weeklyTrend: WeeklyTrend = useMemo(() => {
-    const labels: string[] = [];
-    const data: number[] = [];
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const dayMap = new Map<string, number>();
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
-      const label = d.toLocaleDateString("en-US", { weekday: "short" });
-      dayMap.set(label, 0);
-      labels.push(label);
-    }
-
-    transactions.forEach((t) => {
-      const d = new Date(t.date);
-      d.setHours(0, 0, 0, 0);
-      const diffTime = Math.abs(today.getTime() - d.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-      if (diffDays <= 7) {
-        const label = d.toLocaleDateString("en-US", { weekday: "short" });
-        if (dayMap.has(label) && t.type === "expense") {
-          dayMap.set(label, dayMap.get(label)! + t.amount);
-        }
-      }
-    });
-
-    for (const label of labels) {
-      data.push(dayMap.get(label)!);
-    }
-
-    return { labels, data };
-  }, [transactions]);
+  const chartTrend = useMemo(
+    () => buildChartTrend(transactions, chartPeriod),
+    [transactions, chartPeriod]
+  );
 
   return {
     transactions,
@@ -92,6 +64,10 @@ export function useDashboardData() {
     totalIncome,
     totalExpense,
     balance,
-    weeklyTrend,
+    chartTrend,
+    chartPeriod,
+    setChartPeriod,
+    chartMode,
+    setChartMode,
   };
 }

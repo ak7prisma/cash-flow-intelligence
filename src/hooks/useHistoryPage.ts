@@ -4,6 +4,8 @@ import { useTransactionStore } from "../store/useTransactionStore";
 import { transactionService } from "../service/TransactionService";
 import { formatIDR } from "../utils/assistantHelpers";
 import { getCategoryIcon } from "../utils/categoryIcons";
+import { ALL_CATEGORIES, filterTransactions } from "../utils/historyHelpers";
+import { CATEGORIES } from "../data/categories";
 import { IncomeTransaction, ExpenseTransaction } from "../models/Transaction";
 
 const ITEMS_PER_PAGE = 10;
@@ -60,17 +62,41 @@ function mapTransaction(item: any): MappedMovement {
 }
 
 export function useHistoryPage() {
-  const { isLoading, activeFilter, setActiveFilter, filteredMovements } = useTransactions();
+  const { isLoading, activeFilter, setActiveFilter } = useTransactions();
   const { transactions, setTransactions } = useTransactionStore();
 
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<{ raw: any; mapped: MappedMovement } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [category, setCategory] = useState(ALL_CATEGORIES);
+
+  const categoryOptions = useMemo(() => {
+    const present = new Set(transactions.map((tx) => tx.category));
+    const ordered = CATEGORIES.filter((cat) => present.has(cat));
+    const extras = [...present]
+      .filter((cat) => !CATEGORIES.includes(cat as (typeof CATEGORIES)[number]))
+      .sort();
+    return [ALL_CATEGORIES, ...ordered, ...extras];
+  }, [transactions]);
+
+  const filteredMovements = useMemo(
+    () => filterTransactions(transactions, { activeFilter, category, dateFrom, dateTo }),
+    [transactions, activeFilter, category, dateFrom, dateTo]
+  );
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeFilter]);
+  }, [activeFilter, category, dateFrom, dateTo]);
+
+  const resetFilters = () => {
+    setActiveFilter("All");
+    setCategory(ALL_CATEGORIES);
+    setDateFrom("");
+    setDateTo("");
+  };
 
   const totalPages = Math.ceil(filteredMovements.length / ITEMS_PER_PAGE);
 
@@ -143,6 +169,14 @@ export function useHistoryPage() {
     isLoading,
     activeFilter,
     setActiveFilter,
+    dateFrom,
+    setDateFrom,
+    dateTo,
+    setDateTo,
+    category,
+    setCategory,
+    categoryOptions,
+    resetFilters,
     filteredMovements,
     paginatedMovements,
     currentPage,
