@@ -80,8 +80,8 @@ export default function WeeklyChart({
 }: Readonly<WeeklyChartProps>) {
   const isDark = useDarkMode();
 
-  const expenseColor = isDark ? '#00F5FF' : '#00696B';
-  const incomeColor = isDark ? '#4ADE80' : '#047857';
+  const expenseColor = isDark ? '#00F5FF' : '#E11D48';
+  const incomeColor = isDark ? '#4ADE80' : '#059669';
   const periodLabel = PERIOD_OPTIONS.find((option) => option.value === period)?.label ?? period;
 
   const chartData: ChartData<'line'> = useMemo(() => {
@@ -103,7 +103,7 @@ export default function WeeklyChart({
         pointBackgroundColor: expenseColor,
         pointBorderColor: expenseColor,
         backgroundColor: makeGradient(
-          isDark ? 'rgba(0, 245, 255, 0.2)' : 'rgba(0, 105, 107, 0.2)'
+          isDark ? 'rgba(0, 245, 255, 0.2)' : 'rgba(225, 29, 72, 0.15)'
         ),
       });
     }
@@ -117,7 +117,7 @@ export default function WeeklyChart({
         pointBackgroundColor: incomeColor,
         pointBorderColor: incomeColor,
         backgroundColor: makeGradient(
-          isDark ? 'rgba(74, 222, 128, 0.2)' : 'rgba(4, 120, 87, 0.2)'
+          isDark ? 'rgba(74, 222, 128, 0.2)' : 'rgba(5, 150, 105, 0.15)'
         ),
       });
     }

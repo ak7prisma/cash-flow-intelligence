@@ -14,8 +14,8 @@ interface MonthlyChartProps {
 export default function MonthlyChart({ income, expense }: Readonly<MonthlyChartProps>) {
   const isDark = useDarkMode();
   
-  const colorIncome = '#003366';
-  const colorExpense = isDark ? '#00F5FF' : '#00696B';
+  const colorIncome = isDark ? '#4ADE80' : '#059669';
+  const colorExpense = isDark ? '#00F5FF' : '#E11D48';
 
   const hasData = income > 0 || expense > 0;
   

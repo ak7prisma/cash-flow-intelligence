@@ -61,12 +61,14 @@ export default function History() {
         <div className="grid grid-cols-2 gap-3">
           <DateInput
             label="From"
+            placeholder="Pilih tgl mulai"
             value={dateFrom}
             max={dateTo || undefined}
             onChange={(event) => setDateFrom(event.target.value)}
           />
           <DateInput
             label="To"
+            placeholder="Pilih tgl akhir"
             value={dateTo}
             min={dateFrom || undefined}
             onChange={(event) => setDateTo(event.target.value)}

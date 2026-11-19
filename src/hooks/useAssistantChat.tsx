@@ -3,7 +3,7 @@ import { RiErrorWarningLine } from "react-icons/ri";
 import { parseTransactionIntent, chatWithGemini } from "../service/gemini";
 import { IncomeTransaction, ExpenseTransaction } from "../models/Transaction";
 import { transactionService } from "../service/TransactionService";
-import { type ChatMessage, generateId, getCurrentTime, formatIDR } from "../utils/assistantHelpers";
+import { type ChatMessage, generateId, getCurrentTime, formatIDR, buildFinancialContext } from "../utils/assistantHelpers";
 import { parseLocalDate, getLocalDateISO } from "../utils/dateHelpers";
 import TransactionConfirmationBubble from "../component/Assistant/TransactionConfirmationBubble";
 import FinancialAnalysisBubble from "../component/Assistant/FinancialAnalysisBubble";
@@ -84,18 +84,8 @@ export function useAssistantChat(user: any) {
           };
           setMessages((prev) => [...prev, botMessage]);
         } else {
-          const stats = await transactionService.getDashboardStats(user.uid);
-          const recentTxs = await transactionService.getRecentTransactions(user.uid, 5);
-          
-          const userData = {
-            stats,
-            recentTransactions: recentTxs.map(tx => ({
-              amount: tx.amount,
-              type: tx.type,
-              category: tx.category,
-              date: tx.date
-            }))
-          };
+          const allTransactions = await transactionService.getTransactionsByUser(user.uid);
+          const userData = buildFinancialContext(allTransactions);
 
           const geminiReply = await chatWithGemini(text, userData);
 

@@ -190,19 +190,47 @@ export const parseTransactionIntent = async (message: string): Promise<GeminiInt
 
 export const chatWithGemini = async (message: string, userData?: any): Promise<GeminiChatResponse> => {
   const prompt = `
-    You are a Cash Flow & Financial Analyst. Your PRIMARY jobs are: 1) Analyzing the user's injected financial data, 2) Providing short, concise financial advice/summaries based on the data, and 3) Answering general finance questions.
+User Message: "${message}"
 
-    Context Data: ${userData ? JSON.stringify(userData) : "No data provided."}
+Context Data Keuangan Pengguna:
+${userData ? JSON.stringify(userData, null, 2) : "Belum ada data transaksi."}
 
-    Conditions for JSON response:
-    1. Financial analysis/summary: { "isFinance": true, "isAnalysis": true, "status": string, "analysis": string, "advice": string }
-    2. General finance question: { "isFinance": true, "isAnalysis": false, "reply": string }
-    3. Non-finance: { "isFinance": false, "reply": string }
-    4. Transaction attempt without amount: { "isFinance": true, "isAnalysis": false, "reply": "Boleh tahu berapa nominalnya kak?..." }
+PANDUAN PEMROSESAN PERMINTAAN USER:
+1. Jika pengguna meminta analisis, kalkulasi, evaluasi pengeluaran, atau saran (misal: "hitung pendapatan hari ini", "berapa pengeluaran bulan ini", "analisis keuangan saya", "rekap saldo"):
+   - Gunakan data faktual dari 'todayStats' (untuk pertanyaan hari ini), 'thisMonthStats' (untuk pertanyaan bulan ini), atau 'overallStats' (untuk total/saldo).
+   - Format response dalam format JSON Analisis:
+     {
+       "isFinance": true,
+       "isAnalysis": true,
+       "status": "<Ringkasan angka kunci, misal: 'Pemasukan Hari Ini: Rp 500.000 | Saldo: Rp 3.200.000'>",
+       "analysis": "<Penjelasan detail kalkulasi, sumber kategori, atau perbandingan pemasukan vs pengeluaran>",
+       "advice": "<Saran finansial konkret, solusi budgeting, atau tips praktis>"
+     }
 
-    IMPORTANT: Return ONLY raw JSON. Respond in Indonesian.
-    
-    User Message: ${message}
+2. Jika pengguna mengajukan pertanyaan umum tentang keuangan, konsultasi santai, atau tips:
+   - Format response dalam format JSON Chat Umum:
+     {
+       "isFinance": true,
+       "isAnalysis": false,
+       "reply": "<Jawaban informatif, ramah, dan solutif disertai saran aplikatif>"
+     }
+
+3. Jika pengguna menyebut transaksi tapi tanpa nominal (misal: "tadi beli bensin"):
+   - Format response:
+     {
+       "isFinance": true,
+       "isAnalysis": false,
+       "reply": "Boleh tahu berapa nominalnya kak? Contoh: 'Beli bensin 50rb' supaya bisa langsung saya catat."
+     }
+
+4. Jika pesan sama sekali di luar topik keuangan:
+   - Format response:
+     {
+       "isFinance": false,
+       "reply": "Saya adalah asisten keuangan Cash Flow Intelligence. Saya siap membantu mengelola catatan, menganalisis arus kas, serta memberi saran keuangan Anda!"
+     }
+
+PENTING: Hanya kembalikan RAW JSON yang valid tanpa markdown code block dan tanpa teks tambahan lainnya.
   `;
 
   try {
